@@ -1,0 +1,36 @@
+# Task ID: 6
+# Title: Implement Revenue Adjustment Factor (RAF) Component
+# Status: pending
+# Dependencies: 2, 3
+# Priority: medium
+# Description: Develop the RAF component of the calculator with adjustable parameters as specified in FR3.4.
+# Details:
+1. Create UI components for RAF inputs:
+   - Input fields for 3-year rolling average team revenues
+   - Input fields for individual yearly revenues for relevant periods
+   - Adjustable RAF Sensitivity Factor
+   - Adjustable RAF Clamp Values (lower and upper bounds)
+
+2. Implement calculation functions for both RAF models:
+   - Standard RAF calculation based on 3-year rolling averages
+   - Alternative RAF calculation based on revenue_actual and rev_adjust_ref
+   - Apply sensitivity factor and clamp values
+
+3. Provide option to input the final RAF value directly as an alternative
+
+4. Implement real-time updates of the RAF component as inputs change
+
+5. Add validation for all inputs with appropriate constraints
+
+The implementation should support both RAF models mentioned in the PRD:
+- Standard model using 3-year rolling average team revenues
+- Alternative model using revenue_actual and rev_adjust_ref
+
+# Test Strategy:
+1. Unit tests for all RAF calculation functions
+2. Test both RAF models with various revenue inputs
+3. Test the direct input option for final RAF value
+4. Test edge cases (very high/low revenues, negative RAF before clamping)
+5. Verify real-time updates work correctly
+6. Test with the truth table cases from section 11 of the PRD
+7. Test edge cases from section 13 of the PRD, particularly T6 and T8 which involve RAF clamping

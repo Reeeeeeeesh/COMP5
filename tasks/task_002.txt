@@ -1,0 +1,71 @@
+# Task ID: 2
+# Title: Implement Core Calculation Engine
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Develop the core calculation engine as pure functions that implement the bonus formula and all intermediate calculations as specified in FR2.
+# Details:
+Create a calculation service with pure functions for:
+
+1. Base formula implementation: `FinalBonus = BaseSalary × TargetBonusPct × (InvestmentWeight × InvestmentScoreMultiplier + QualitativeWeight × QualScoreMultiplier) × RAF`
+
+2. Implement intermediate calculations:
+   - Target Bonus calculation
+   - Weighted Alpha calculation
+   - Alpha Multiplier calculation
+   - Average Qualitative Score calculation
+   - Qualitative Multiplier calculation
+   - RAF components calculation
+   - Initial Bonus calculation
+
+3. Implement cap and policy checks:
+   - 3x Base Salary cap check
+   - MRT cap check
+   - Apply the lower of the two caps if both are exceeded
+
+4. Implement RAF calculation with configurable parameters:
+   - Support for 3-year rolling average team revenues
+   - RAF Sensitivity Factor application
+   - RAF Clamp Values application (lower and upper bounds)
+
+Code should be implemented in both TypeScript (for frontend) and Python (for backend) to ensure consistent calculations in both environments.
+
+# Test Strategy:
+1. Unit tests for each calculation function
+2. Integration tests for the complete calculation flow
+3. Test with the truth table cases provided in section 11 of the PRD
+4. Test edge cases from section 13 of the PRD
+5. Test with invalid inputs to ensure proper error handling
+6. Benchmark performance to ensure calculations meet the <500ms requirement for individual calculations
+
+# Subtasks:
+## 1. Implement Formula Component Calculations [done]
+### Dependencies: None
+### Description: Develop the core calculation logic for each individual formula component in both TypeScript and Python, ensuring precise decimal arithmetic and type safety.
+### Details:
+This includes implementing all mathematical operations required for each formula component, using libraries such as decimal.js in TypeScript and decimal or similar in Python for financial accuracy. Ensure immutability and type safety in TypeScript, and proper data validation in Python.
+
+## 2. Develop Cap and Policy Logic [done]
+### Dependencies: 2.1
+### Description: Implement the business rules for caps, limits, and policy-specific logic in both TypeScript and Python, ensuring all edge cases are handled.
+### Details:
+This involves coding the logic that enforces caps, floors, and policy constraints on the calculated values, with comprehensive handling of edge cases and exceptions.
+
+## 3. Implement RAF (Risk Adjustment Factor) Calculation [done]
+### Dependencies: 2.1, 2.2
+### Description: Develop the RAF calculation module in both TypeScript and Python, integrating it with the formula and cap/policy logic.
+### Details:
+This subtask covers the implementation of the RAF formula, ensuring it interacts correctly with other components and adheres to business requirements.
+
+## 4. Ensure Parallel Implementation Consistency [done]
+### Dependencies: 2.1, 2.2, 2.3
+### Description: Verify that the logic and results are consistent between the TypeScript and Python implementations through cross-language validation.
+### Details:
+Establish a process for comparing outputs between the two languages, possibly using shared test vectors or golden files, and document any discrepancies for resolution.
+
+## 5. Develop Unit and Integration Test Coverage [done]
+### Dependencies: 2.1, 2.2, 2.3, 2.4
+### Description: Create comprehensive unit and integration tests for all components in both TypeScript and Python, covering edge cases, caps, and policy logic.
+### Details:
+Write tests that validate individual formula components, cap/policy logic, and RAF calculations, as well as end-to-end integration tests to ensure the entire calculation engine functions as expected in both languages.
+

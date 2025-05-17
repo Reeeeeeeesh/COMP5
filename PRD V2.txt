@@ -1,0 +1,325 @@
+Product Requirements Document: Flexible Variable Compensation Calculator
+Version: 1.5 Date: May 15, 2025 Author: Gemini AI Status: Draft (Revised with Batch Functionality)
+1. Introduction
+•	1.1 Purpose: This document outlines the product requirements for a web-based tool designed to calculate variable compensation (bonus) for UK fund managers. The primary objective is to provide a highly flexible platform where users can adjust various input parameters and formula components to model different scenarios, assess their impact on bonus outcomes for individuals, and manage and calculate compensation for multiple employees or scenarios in bulk.
+•	1.2 Product Overview: The "Flexible Variable Compensation Calculator" (FVCC) will be an intuitive, interactive web application. It will allow fund managers, HR personnel, and compensation analysts to input or adjust data related to base salary, target bonus percentages, investment performance metrics, qualitative scores, and revenue adjustment factors, both for individual calculations and for batch processing of multiple employees. The tool will then calculate the final bonus based on a configurable formula, displaying both the final amount and the breakdown of its constituent parts. The key differentiator will be its ability to allow real-time adjustments to nearly every input and parameter, robust scenario analysis for individuals, and efficient batch processing capabilities.
+•	1.3 Goals: 
+o	To provide a transparent and understandable way to calculate fund manager bonuses.
+o	To empower users to model various "what-if" scenarios by adjusting key compensation drivers for individuals and groups.
+o	To facilitate better decision-making regarding compensation planning and performance management.
+o	To create a tool that is user-friendly, accurate, and adaptable to potential changes in compensation plan rules.
+o	To serve as a standalone tool for individual or team-based bonus calculations and assessments.
+o	To enable efficient modeling and calculation of compensation across entire teams or specific employee groups through batch processing.
+2. Target Audience
+•	2.1 UK Fund Managers: To understand their potential bonus based on current or projected performance and to see how changes in different metrics might affect their compensation.
+•	2.2 HR / Compensation & Benefits Specialists: To model compensation plans, analyze the impact of parameter changes across a team or the firm, manage batch calculations for multiple employees, and to explain bonus calculations to managers.
+•	2.3 Senior Management / Finance Teams: To understand the financial implications of different compensation scenarios, including batch projections, and to ensure alignment with firm-wide financial goals.
+3. Overall Description
+•	3.1 Product Vision: The FVCC aims to be the leading flexible bonus modeling tool for the UK fund management industry, offering unparalleled transparency and control over compensation calculations, supporting both individual deep-dives and broad batch processing. It will move beyond static calculators by providing a dynamic environment for users to explore the sensitivity of bonuses to various inputs.
+•	3.2 Key Features: 
+o	Interactive input fields for all compensation components for individual calculations.
+o	Real-time recalculation of bonus upon input changes for individual scenarios.
+o	Adjustable weights for different performance components.
+o	Configurable parameters for mapping curves (e.g., alpha-to-multiplier).
+o	Flexible RAF calculation inputs (e.g., revenue data, sensitivity factor, clamp values).
+o	Clear display of the final bonus and all intermediate calculation steps.
+o	Ability to see alerts for policy breaches (e.g., bonus exceeding 3x base salary, MRT cap).
+o	Batch Calculation Capability: Ability to upload data for multiple employees and run simultaneous bonus calculations, applying global or individual parameters.
+o	(Optional V1.1 in original, now core for usability) User-friendly interface with clear visualizations of how inputs affect outputs.
+o	Ability to save and compare different individual and batch scenarios.
+•	3.3 Assumptions and Dependencies: 
+o	Users will have a foundational understanding of the compensation components.
+o	The core bonus calculation formula (as derived from the provided GitHub repo and user requirements) will be the basis, but its parameters will be adjustable.
+o	A backend system will be required to support batch processing and data management.
+o	The tool will be web-based and accessible via modern browsers.
+o	For batch operations, users will be able to upload data files (e.g., CSV).
+4. Functional Requirements
+•	FR1: User Interface (UI) and User Experience (UX) – General & Individual Calculations:
+o	FR1.1 Intuitive Layout: The UI must be clean, well-organized, and easy to navigate. Inputs, parameters, and results should be clearly delineated.
+o	FR1.2 Real-time Feedback (Individual Mode): As users adjust inputs or parameters for a single calculation, the calculated bonus and intermediate values must update in real-time or near real-time without requiring a page refresh.
+o	FR1.3 Input Controls: 
+	Numeric inputs for salaries, percentages, scores, revenue figures.
+	Sliders or dropdowns for selecting weights or predefined parameter sets (with an option for custom input).
+	Clear labels and helper text/tooltips for all input fields and parameters explaining their meaning and impact.
+o	FR1.4 Responsive Design: The application must be fully responsive and usable on desktops, tablets, and mobile devices.
+o	FR1.5 Visualizations: Consider simple charts (e.g., pie chart for bonus composition, bar chart for sensitivity) to help users visualize the impact of their adjustments in individual mode.
+•	FR2: Core Calculation Engine:
+o	FR2.1 Base Formula Implementation: The engine must accurately implement the core bonus formula: FinalBonus = BaseSalary × TargetBonusPct × (InvestmentWeight × InvestmentScoreMultiplier + QualitativeWeight × QualScoreMultiplier) × RAF.
+o	FR2.2 Intermediate Calculations: All intermediate calculations (Target Bonus, Weighted Alpha, Alpha Multiplier, Average Qualitative Score, Qualitative Multiplier, RAF components, Initial Bonus) must be calculated and optionally displayable for individual calculations and within batch result breakdowns.
+o	FR2.3 Pure Functions: Financial calculation logic should be implemented as pure functions, as per the guidelines in the provided repository, and be callable by both individual and batch processing modules.
+•	FR3: Input Parameters & Adjustability (Core Flexibility Requirement) – For Individual & Batch Application:
+o	FR3.1 Base Salary & Target Bonus %: 
+	Users must be able to input/adjust the Base Salary.
+	Users must be able to input/adjust the Target Bonus Percentage.
+o	FR3.2 Investment Performance Component: 
+	Users must be able to input/adjust the overall Investment Score Multiplier directly OR input underlying metrics to calculate it.
+	If calculating from underlying metrics (more flexible): 
+	Input fields for individual fund alphas (e.g., +X bps).
+	Input fields for AUM weight per fund.
+	Adjustable parameters for the alpha-to-multiplier mapping curve (e.g., alpha for 1x payout, alpha for max payout, max payout multiplier).
+	Users must be able to adjust the Investment Weight (e.g., default 60%, but adjustable).
+o	FR3.3 Qualitative Performance Component: 
+	Users must be able to input/adjust the overall Qualitative Score Multiplier directly OR input underlying scores to calculate it.
+	If calculating from underlying scores (more flexible): 
+	Input fields for individual qualitative scores (Risk, Compliance, Teamwork, ESG, Client Outcomes) on a 0-1 or 0-100 scale.
+	Adjustable parameters for the average qualitative score-to-multiplier mapping curve (e.g., score thresholds for 0x, 1x, 1.2x multipliers).
+	Users must be able to adjust the Qualitative Weight (e.g., default 40%, but adjustable).
+o	FR3.4 Revenue Adjustment Factor (RAF) Component: 
+	Users must be able to input/adjust the final RAF value directly OR input underlying metrics to calculate it.
+	If calculating from underlying metrics (more flexible): 
+	Input fields for 3-year rolling average team revenues (e.g., Avg Rev Years 0-2, Avg Rev Years -1 to -3) OR individual yearly revenues for the relevant periods.
+	Adjustable RAF Sensitivity Factor (e.g., default 0.20).
+	Adjustable RAF Clamp Values (lower and upper bounds, e.g., 0.90, 1.10).
+	Alternative RAF (from app/services/comp_engine.py): 
+	Input for revenue_actual.
+	Adjustable rev_adjust_ref (reference revenue).
+	Adjustable low/high clamp values for the revenue factor.
+	(Decision needed on which RAF model or if both should be supported for flexibility)
+o	FR3.5 Policy & Cap Adjustments: 
+	Users must be able to input/adjust the MRT (Market Reference Total) Cap Percentage.
+	Users must be able to define salary bands to see salary band breach alerts.
+o	FR3.6 Parameter Persistence: Ability to save a set of adjusted parameters as a named scenario (for individual or as global parameters for a batch).
+•	FR4: Output & Reporting – Individual & Batch:
+o	FR4.1 Clear Bonus Display: The final calculated bonus must be prominently displayed (for individuals and per employee in a batch).
+o	FR4.2 Calculation Breakdown: Users must be able to see a clear breakdown of how the bonus was calculated for an individual or for each employee in a batch.
+o	FR4.3 Alerts: 
+	Display a clear alert if the Final Bonus > 3 × Base Salary.
+	Display a clear alert if the calculated bonus is capped by the MRT Cap.
+	Display alerts for salary band breaches if bands are defined.
+	(For Batch) Alerts should be clearly indicated for each affected employee in the results.
+o	FR4.4 Export: Ability to export the current individual scenario's inputs and results or full batch calculation results (e.g., to CSV or printable view).
+•	FR5: Scenario Analysis / Sensitivity Analysis:
+o	FR5.1 Real-time Impact Assessment (Individual): The core design should facilitate this by updating results as parameters are changed.
+o	FR5.2 Side-by-Side Comparison: Allow users to load two saved individual scenarios and compare their inputs and outputs.
+o	FR5.3 Sensitivity Sliders (Individual): For key inputs, provide sliders that allow users to quickly see how changing that single input impacts the final bonus.
+•	FR6: Data Management:
+o	FR6.1 Scenario Saving: Allow users to name and save sets of input parameters and adjustments for individual calculations.
+o	FR6.2 Scenario Loading: Allow users to load previously saved individual scenarios.
+o	FR6.3 Batch Data Handling: 
+	System must provide downloadable templates for batch data upload (e.g., CSV).
+	Define how uploaded employee data for batches is stored, secured, and managed (e.g., session-based, temporary storage, or persistent if linked to user accounts). Address data retention and deletion policies.
+o	FR6.4 Batch Scenario Management: Users should be able to save a set of global parameters and an associated uploaded employee list (or a reference to it) as a named batch scenario.
+•	FR7: Batch Calculations:
+o	FR7.1 Batch Input Interface: 
+	FR7.1.1 The system must provide an interface for uploading employee data for batch calculations (e.g., via CSV, Excel upload).
+	FR7.1.2 The interface must allow mapping of uploaded data columns to required input parameters (Base Salary, individual performance metrics, etc.).
+	FR7.1.3 The system must provide clear feedback on data validation during upload (e.g., errors per row, missing data, format errors).
+o	FR7.2 Batch Parameter Configuration: 
+	FR7.2.1 Users must be able to define and apply global parameters (e.g., standard Target Bonus %, RAF components, Investment/Qualitative weights, Cap percentages) to an entire batch.
+	FR7.2.2 The system must allow for overriding global parameters with individual employee data from the uploaded file or through manual adjustments in a table view before running the batch calculation.
+o	FR7.3 Batch Processing: 
+	FR7.3.1 The calculation engine must be capable of processing multiple employee records from the uploaded and configured batch.
+	FR7.3.2 The system should provide feedback on the progress of batch calculations if they are time-consuming.
+o	FR7.4 Batch Results Display: 
+	FR7.4.1 The system must display results for batch calculations in a clear, tabular format, showing individual bonus breakdowns, applied parameters, and any alerts for each employee.
+	FR7.4.2 Users must be able to sort, filter, and search within batch results.
+	FR7.4.3 The system should provide summary statistics for batch results (e.g., total bonus payout, average bonus, number of capped individuals, total cost).
+o	FR7.5 Batch Export: Users must be able to export the full batch calculation results, including inputs, intermediate steps, final bonus, and alerts for each employee, to CSV or Excel.
+•	FR8: User Accounts & Roles (Future Consideration, but basic support might be needed for saving batch scenarios securely):
+o	For V1 incorporating batch, consider if basic user accounts are needed to save batch scenarios or uploaded data securely, even if full role differentiation is future.
+o	Future versions might consider: 
+	Admin role: To set default parameters, firm-wide rules, and manage user access.
+	Manager/HR role: To save scenarios, potentially link to employee data (if integrated).
+5. Non-Functional Requirements
+•	NFR1: Performance: 
+o	NFR1.1 Real-time Calculation (Individual): Calculations should appear instantaneous to the user upon changing an input (target < 500ms for recalculation and UI update).
+o	NFR1.2 Page Load Time: Initial page load time should be under 3 seconds on a standard broadband connection.
+o	NFR1.3 Batch Calculation Time: Define acceptable processing times for batch calculations (e.g., a batch of 100 employees calculated within 30 seconds; a batch of 500 within 2 minutes). Consider asynchronous processing for larger batches.
+o	NFR1.4 UI Responsiveness with Large Data: The UI must remain responsive when displaying or managing lists of employees for batch processing (e.g., in tables).
+•	NFR2: Security: 
+o	NFR2.1 Data Privacy: 
+	For individual client-side calculations, data remains client-side.
+	For batch uploads and any server-side scenario saving, all data transmission must use HTTPS. Data at rest (e.g., saved scenarios, temporary batch data) must be encrypted.
+	Clear policies on handling, storage, and deletion of uploaded batch data containing potentially sensitive employee information are required. Compliance with UK GDPR is essential.
+o	NFR2.2 Input Validation: All user inputs (manual and uploaded) must be validated to prevent errors and potential injection attacks.
+o	NFR2.3 Secure Data Upload Mechanism: Ensure the file upload mechanism for batch data is secure and validates file types and sizes.
+•	NFR3: Usability: 
+o	NFR3.1 Ease of Use: The tool should be usable by individuals without extensive technical training. Clear labels, tooltips, and an intuitive workflow are crucial for both individual and batch operations.
+o	NFR3.2 Accessibility: Adhere to WCAG 2.1 Level AA guidelines.
+•	NFR4: Maintainability: 
+o	NFR4.1 Modular Code: Codebase should be modular and well-commented, following guidelines similar to those in the provided repository (e.g., pure functions for calculations). Backend and frontend logic should be clearly separated.
+o	NFR4.2 Testability: Unit tests for calculation logic and E2E tests for UI interactions should be implemented, including tests for batch processing scenarios.
+•	NFR5: Compliance (UK Context): 
+o	NFR5.1 Transparency: The tool should promote transparency in bonus calculations, aligning with UK financial services best practices (e.g., SMCR implications for accountability). This extends to batch views and how policies are applied consistently.
+•	NFR6: Scalability: 
+o	NFR6.1 The system (especially the backend if implemented for batch processing) must be designed to handle a growing number of users, saved scenarios, and batch calculations for a defined number of employees (e.g., up to 500-1000 employees in a batch) without significant degradation in performance.
+6. Technical Considerations
+•	6.1 Frontend: 
+o	React 18, TypeScript 5, Vite (as per existing frontend/ in the repo).
+o	Tailwind CSS for styling (as per existing frontend/).
+o	State management: Local state for simple individual views. For complex batch views and data grids, consider Zustand (as per repo guidelines) or similar.
+o	Libraries for data grid display and manipulation (e.g., AG Grid, TanStack Table) for batch results.
+o	React Query (or similar) for fetching any default parameters/rules from a backend and for managing server state related to batch jobs.
+•	6.2 Backend (Essential for Batch Processing): 
+o	Python 3.11, FastAPI (as per existing app/ in the repo).
+o	Pydantic for data validation (incoming batch data, parameters).
+o	SQLAlchemy with Alembic for migrations if a database is used for scenario saving or temporary batch data storage.
+o	Database: PostgreSQL or similar relational database.
+o	Asynchronous Task Queues (e.g., Celery with Redis or RabbitMQ) for handling time-consuming batch calculations to prevent UI blocking and manage resources.
+•	6.3 Calculation Logic: 
+o	Core financial formulas encapsulated in pure, testable functions (callable from both frontend for individual real-time updates if feasible, and backend for batch processing).
+o	Orchestration of batch processing, data validation for batches, and application of global/individual parameters for batches will primarily be backend logic.
+•	6.4 Browser Support: Latest versions of Chrome, Firefox, Safari, Edge.
+7. Future Considerations / Potential Enhancements
+•	7.1 Advanced User Authentication and Roles: Granular Admin, HR, Manager roles with different permissions for accessing batch data, approving calculations, etc.
+•	7.2 Deeper Database Integration: 
+o	Storing historical batch calculation results.
+o	(Ambitious) Integration with HRIS for automated employee data import/sync for batches, and performance systems for metrics.
+•	7.3 Advanced Reporting: More sophisticated printable PDF reports for individual and batch results, customizable dashboards.
+•	7.4 Workflow for Batch Review and Approval: Formal steps for submitting, reviewing, and approving batch compensation runs.
+•	7.5 Audit Trails: Logging changes to parameters for saved individual and batch scenarios, and tracking batch processing events.
+•	7.6 More Sophisticated Visualizations: Interactive charts showing sensitivity analysis across a batch, distribution curves.
+•	7.7 Integration with Payroll Systems for seamless data transfer post-calculation.
+•	7.8 Support for Multiple Compensation Plans/Formulas that can be selected and applied to individuals or batches.
+8. Success Metrics
+•	8.1 User Adoption: Number of active users, frequency of individual vs. batch calculations.
+•	8.2 User Satisfaction: Feedback gathered through surveys or direct user interviews, focusing on ease of use for both individual and batch modes.
+•	8.3 Task Completion Rate: Users can successfully input data, adjust parameters, run individual and batch calculations, and understand the results.
+•	8.4 Reduction in Manual Calculation Time/Errors: Anecdotal and potentially quantifiable feedback from HR/Comp teams, especially regarding batch processing.
+•	8.5 Accuracy: Calculated bonuses match manual checks or existing spreadsheet models for defined scenarios (individual and batch).
+•	8.6 Efficiency Gain: Time saved in processing multiple employee bonuses using the batch feature compared to previous methods.
+•	8.7 Adoption Rate of Batch Feature: Percentage of target HR/Comp users utilizing the batch calculation functionality.
+9. Personas & Key User Stories (v1.1 addition, expanded for batch)
+ID	Persona	Goal	Representative User Story
+P1	Fund Manager – Oliver	Understand how RAF & performance metrics alter payout in real-time.	"As a Fund Manager, I want to tweak my RAF and score inputs so that I instantly see the bonus impact on my individual calculation."
+P2	HR Analyst – Priya	Configure firm-level parameters, run batch calculations, and export compliant reports.	"As an HR Analyst, I want to lock firm-wide clamps/caps, upload a CSV of 50 employees with their performance data, calculate all their bonuses, and download a CSV of results so that comp review is audit-ready."
+P3	Compliance Officer – Laura	Validate edge-case inputs against regulatory caps, individually and in batch.	"As a Compliance Officer, I need to input worst-case scenarios for an individual and apply a test scenario to a batch to confirm no bonus breaches the MRT cap."
+P4	HR Manager – David	Assess financial impact of different compensation scenarios across a team.	"As an HR Manager, I want to apply three different RAF sensitivity factors to my entire department via batch scenarios so I can compare the total bonus pool cost for each scenario."
+Export to Sheets
+10. Acceptance Criteria Addendum (v1.1 addition, expanded for batch)
+Below we add bullet-level acceptance criteria to critical functional requirements. These supplement, not replace, existing FR text.
+•	FR1 – Input Parameter UI (Individual)
+o	AC 1.1 Default values load from config.json (or backend config) on page open for individual calculation mode.
+o	AC 1.2 Invalid numeric range triggers inline error and disables 'Calculate' button (or shows error) in individual mode.
+o	AC 1.3 Any input change updates the 'Calculated Bonus' output within 500 ms in individual mode.
+•	FR2 – Bonus Formula Engine
+o	AC 2.1 For each row in the truth-table (§11), the engine returns the expected value for an individual calculation.
+o	AC 2.2 RAF = 0 forces Final Bonus = 0.
+o	AC 2.3 If computed bonus exceeds Cap Bonus, output equals Cap Bonus and 'Cap Applied' flag is true.
+•	FR7 – Batch Calculations
+o	FR7.1 – Batch Input Interface 
+	AC 7.1.1 System successfully parses a valid CSV file with up to 200 rows and all required columns as per the provided template.
+	AC 7.1.2 System correctly identifies and flags rows with missing mandatory data (e.g., Base Salary) during upload validation, preventing processing of invalid rows.
+	AC 7.1.3 User can successfully map uploaded CSV columns to the tool's required input fields if headers don't match template exactly.
+o	FR7.2 – Batch Parameter Configuration 
+	AC 7.2.1 User can apply a global Target Bonus % to all employees in an uploaded batch.
+	AC 7.2.2 User can override the global Target Bonus % for a specific employee in the batch input table with a value from the uploaded CSV.
+o	FR7.3 – Batch Processing 
+	AC 7.3.1 For a batch of 10 diverse employees, the system calculates the correct final bonus for each, matching individual manual calculations using the same parameters.
+	AC 7.3.2 System provides a progress indicator for batches expected to take longer than 10 seconds.
+o	FR7.4 – Batch Results Display 
+	AC 7.4.1 Batch results table correctly displays Base Salary, Target Bonus, Calculated RAF, Investment Multiplier, Qualitative Multiplier, Initial Bonus, Final Bonus, and any Cap/Alerts for each employee.
+	AC 7.4.2 Summary statistics (total payout, average bonus) are correctly calculated and displayed for the batch.
+o	FR7.5 – Batch Export 
+	AC 7.5.1 Exported CSV from a batch calculation contains all displayed columns and data accurately reflecting the on-screen results.
+(Repeat the same bullet style for remaining FRs as needed during sprint planning and backlog grooming.)
+11. Formula TruthTable
+This table outlines specific test cases to validate the core bonus calculation logic.
+Input Parameters & Weights
+Case	Base Salary	Target %	Inv. Score Mult.	Qual. Score Mult.	Inv. Weight	Qual. Weight	RAF
+T1–Minimum	£50,000	0%	1.0	1.0	60%	40%	0.0
+T2–Typical	£120,000	40%	1.2	0.9	60%	40%	1.1
+T3–Cap Edge	£500,000	100%	2.0	1.5	70%	30%	1.0
+T4-MRT Capped	£600,000	100%	2.0	2.0	50%	50%	1.2
+T5-3xBaseCap	£100,000	200%	2.0	2.0	50%	50%	1.0
+Export to Sheets
+Calculated Bonus Outputs & Notes
+Case	Calculated Initial Bonus	Calculated Final Bonus	Notes
+T1–Minimum	£0	£0	RAF is 0, so Final Bonus is 0.
+T2–Typical	£120,000 * 0.40 * (0.6*1.2 + 0.4*0.9) = £48,000 * (0.72 + 0.36) = £48,000 * 1.08 = £51,840	£51,840 * 1.1 = £57,024	Standard calculation.
+T3–Cap Edge	£500,000 * 1.00 * (0.7*2.0 + 0.3*1.5) = £500,000 * (1.4 + 0.45) = £500,000 * 1.85 = £925,000	£925,000	Assuming no MRT cap for this example, or MRT cap > £925,000.
+T4-MRT Capped	£600,000 * 1.00 * (0.5*2.0 + 0.5*2.0) = £600,000 * 2.0 = £1,200,000	Initial: £1,200,000 * 1.2 = £1,440,000. Capped to £1,000,000	MRT Cap of £1,000,000 applied (illustrative value for MRT cap).
+T5-3xBaseCap	£100,000 * 2.00 * (0.5*2.0 + 0.5*2.0) = £200,000 * 2.0 = £400,000	Capped to £300,000	Final Bonus capped at 3x Base Salary (£100,000 * 3).
+Export to Sheets
+Notes on Calculations:
+•	Calculated Initial Bonus = Base Salary * Target % * (Investment Weight * Investment Score Multiplier + Qualitative Weight * Qualitative Score Multiplier)
+•	Calculated Final Bonus = Calculated Initial Bonus * RAF. This result is then subject to: 
+o	The 3x Base Salary Cap (Final Bonus cannot exceed 3 * Base Salary).
+o	The MRT (Market Reference Total) Cap (Final Bonus cannot exceed a specified MRT cap value, which is an adjustable parameter in the tool). The lower of these caps applies if multiple are breached.
+12 Data Dictionary & API Contract (NEW)
+12.1 Canonical Data Dictionary (Paginated for readability)
+Field Name	Type	Units / Format	Nullable	Source	Description
+base_salary	number	GBP	no	Upload / UI	Fixed base salary per annum before bonus
+target_bonus_pct	number	0–1 float	no	Upload / UI	Contractual target bonus expressed as a decimal (0.4 = 40 %)
+investment_score_multiplier	number	≥ 0	no	Upload / UI	Payout multiplier derived from alpha-curve
+qualitative_score_multiplier	number	≥ 0	no	Upload / UI	Payout multiplier derived from qualitative scores
+investment_weight	number	0–1	no	UI (default 0.6)	Weight of investment component
+qualitative_weight	number	0–1	no	UI (default 0.4)	Weight of qualitative component
+raf	number	≥ 0	no	Calc / UI	Revenue Adjustment Factor after clamps
+mrt_cap	number	GBP	yes	UI	Regulatory Market-Reference-Total cap
+three_x_cap	boolean	—	no	UI (default true)	Enforce 3 × Base-Salary cap
+final_bonus	number	GBP	calc	Engine	Output after all clamps/caps
+(Table 1 of 3 – subsequent pages enumerate batch-upload metadata, scenario-IDs, and audit fields.)
+12.2 OpenAPI v3.1 Stub (abridged)
+yaml
+CopyEdit
+paths:
+  /calculate:
+    post:
+      summary: Calculate individual bonus
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Inputs" }
+      responses:
+        "200":
+          description: Calculation result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Result" }
+
+  /batch:
+    post:
+      summary: Calculate bonuses for a batch upload
+      requestBody:
+        content:
+          text/csv: {}
+      responses:
+        "202":
+          description: Batch job accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { job_id: { type: string } }
+components:
+  schemas:
+    Inputs:
+      type: object
+      required: [base_salary, target_bonus_pct, investment_score_multiplier,
+                 qualitative_score_multiplier, investment_weight, qualitative_weight, raf]
+      properties:
+        base_salary: { type: number, minimum: 0 }
+        target_bonus_pct: { type: number, minimum: 0, maximum: 1 }
+        # …remaining fields…
+    Result:
+      type: object
+      properties:
+        final_bonus: { type: number }
+        breakdown:  { type: object }
+________________________________________
+13 Edge-Case Precedence Truth-Rows (NEW – extends § 11)
+Case	Base Salary	Target %	Inv. Mult.	Qual. Mult.	InvWt	QualWt	RAF	Notes / Expected Behaviour
+T6 – Negative RAF	£120 000	40 %	1.0	1.0	0.6	0.4	-0.2	Final bonus floored at 0 after RAF clamp (lower-bound 0.0)
+T7 – Zero Target	£150 000	0 %	2.0	2.0	0.5	0.5	1.2	Entire chain returns 0 because Target % = 0 precedes all caps
+T8 – RAF > Upper Clamp	£200 000	50 %	1.5	1.5	0.6	0.4	1.50	RAF first clamped to 1.10, then bonus tested against 3× cap (sequence: clamp → cap)
+(Truth-table CSV extended accordingly; unit tests will import these rows.)
+________________________________________
+14 Observability NFR (NEW – appended to § 5)
+NFR 7: Observability
+•	NFR 7.1 Structured Logging: JSON logs at INFO for business events, DEBUG for calc internals, ERROR for stack traces.
+•	NFR 7.2 PII Redaction: base_salary, employee_id hashed in logs.
+•	NFR 7.3 Metrics (Prometheus):
+1.	bonus_calc_duration_seconds (histogram, labelled mode=individual|batch)
+2.	batch_job_rows_total (counter)
+3.	bonus_cap_applied_total (counter, labelled type=3x|mrt)
+•	NFR 7.4 Tracing: OpenTelemetry trace-ids injected into every log line.
+•	NFR 7.5 Error Monitoring: Sentry DSN configured; uncaught exceptions forwarded with calc context.
+________________________________________
+15 Authentication Decision 
+No authentication is required for MVP (v 1.5).
+•	All individual calculations execute entirely client-side.
+•	Batch uploads are stored ephemerally and scoped to an anonymous session-ID; data deleted after 24 h or on job completion.
+•	A full user/role model (Admin / HR / Manager) is deferred to a future milestone (§ 7.1).
+•	Any auth added later must be token-based (OAuth 2 PKCE) and added explicitly to this PRD.
+

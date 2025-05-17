@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "generatedAt": "2025-05-16T11:54:57.752Z",
+    "tasksAnalyzed": 22,
+    "thresholdScore": 5,
+    "projectName": "Taskmaster",
+    "usedResearch": false
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 3,
+      "taskTitle": "Design and Implement Individual Calculator UI",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the Individual Calculator UI implementation into subtasks covering layout design, input components with validation, real-time calculation engine, results display with breakdown, and responsive design with styling.",
+      "reasoning": "This task involves complex UI development with multiple interactive components, real-time calculations, validation, and responsive design. It already has 5 well-defined subtasks covering the major components."
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "Implement Investment Performance Component",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Investment Performance Component implementation into subtasks covering UI design, calculation functions, validation logic, and integration with the main calculator.",
+      "reasoning": "This component requires specialized calculation logic with configurable parameters and real-time updates. It needs UI components, calculation functions, validation, and integration with the main calculator."
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "Implement Qualitative Performance Component",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Qualitative Performance Component implementation into subtasks covering UI design, calculation functions, validation logic, and integration with the main calculator.",
+      "reasoning": "Similar to the Investment Performance Component, this requires specialized calculation logic with configurable parameters. The complexity is comparable with similar subtask requirements."
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "Implement Revenue Adjustment Factor (RAF) Component",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the RAF Component implementation into subtasks covering UI design, standard RAF calculation model, alternative RAF calculation model, validation logic, and integration with the main calculator.",
+      "reasoning": "This component is more complex than the others as it involves two different calculation models, sensitivity factors, and clamping logic. It requires more subtasks to properly organize the work."
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "Implement Policy & Cap Adjustments",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Policy & Cap Adjustments implementation into subtasks covering UI design, cap calculation functions, alert system for policy breaches, and integration with the main calculator.",
+      "reasoning": "This component involves implementing multiple types of caps with proper precedence rules and visual alerts for policy breaches. It requires careful implementation to handle all edge cases."
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "Implement Scenario Saving and Loading for Individual Calculations",
+      "complexityScore": 5,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Break down the Scenario Saving and Loading functionality into subtasks covering UI design, client-side storage implementation, and scenario management functions.",
+      "reasoning": "This task involves implementing local storage for scenarios with serialization/deserialization of complex data structures. It's moderately complex but more straightforward than the calculation components."
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "Implement Side-by-Side Scenario Comparison",
+      "complexityScore": 5,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Break down the Side-by-Side Scenario Comparison functionality into subtasks covering UI design, comparison logic implementation, and export functionality.",
+      "reasoning": "This task builds on the scenario management functionality and requires creating a comparison view with difference highlighting. It's moderately complex but focused on UI and presentation logic."
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "Implement Sensitivity Analysis for Individual Calculations",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Sensitivity Analysis functionality into subtasks covering UI design with sliders, sensitivity calculation functions, visual representations of sensitivity, and real-time update optimization.",
+      "reasoning": "This task involves complex calculations to determine input sensitivity and creating interactive visualizations that update in real-time. It requires both mathematical understanding and advanced UI implementation."
+    },
+    {
+      "taskId": 11,
+      "taskTitle": "Implement Export Functionality for Individual Calculations",
+      "complexityScore": 4,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Break down the Export Functionality into subtasks covering UI design for export options, CSV generation implementation, and printable view formatting.",
+      "reasoning": "This task is relatively straightforward, involving standard export functionality to CSV and printable formats. The main challenges are formatting the data appropriately and ensuring browser compatibility."
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Implement Batch Input Interface",
+      "complexityScore": 8,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the Batch Input Interface implementation into subtasks covering UI design for file upload, backend API for file processing, template creation, column mapping functionality, and data validation.",
+      "reasoning": "This task involves complex file handling, parsing, validation, and mapping functionality. It requires both frontend and backend components and must handle various file formats and potential errors."
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Implement Batch Parameter Configuration",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Batch Parameter Configuration implementation into subtasks covering UI design for global parameters, data grid component for employee data, parameter inheritance logic, and validation functionality.",
+      "reasoning": "This task requires creating a complex data grid with inline editing capabilities and implementing parameter inheritance logic. It needs to handle potentially large datasets efficiently."
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "Implement Batch Processing Engine",
+      "complexityScore": 9,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down the Batch Processing Engine implementation into subtasks covering architecture design, calculation functions, performance optimization, progress tracking, error handling, and monitoring/logging.",
+      "reasoning": "This is one of the most complex tasks, involving asynchronous processing, worker management, performance optimization, and error handling. It requires careful design to handle large batches efficiently."
+    },
+    {
+      "taskId": 16,
+      "taskTitle": "Implement Batch Results Display",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Batch Results Display implementation into subtasks covering UI design for results table, data grid component implementation, summary statistics calculation, and detail view for individual employees.",
+      "reasoning": "This task involves creating a complex data grid with sorting, filtering, and pagination capabilities, as well as summary statistics and detailed views. It needs to handle potentially large result sets efficiently."
+    },
+    {
+      "taskId": 17,
+      "taskTitle": "Implement Batch Export Functionality",
+      "complexityScore": 5,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Break down the Batch Export Functionality into subtasks covering UI design for export options, CSV/Excel generation implementation, and large dataset handling optimization.",
+      "reasoning": "This task involves generating CSV/Excel files from potentially large datasets. The main challenges are handling large exports efficiently and formatting the data appropriately."
+    },
+    {
+      "taskId": 18,
+      "taskTitle": "Implement Batch Scenario Management",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Batch Scenario Management implementation into subtasks covering UI design, server-side storage implementation, scenario management functions, and security measures.",
+      "reasoning": "This task involves server-side storage of complex batch scenarios with proper security measures. It's more complex than the individual scenario management due to the server-side component and larger data volumes."
+    },
+    {
+      "taskId": 19,
+      "taskTitle": "Implement Session Management for Anonymous Users",
+      "complexityScore": 7,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Session Management implementation into subtasks covering session ID generation and storage, data scoping based on session, data cleanup mechanisms, and security measures.",
+      "reasoning": "This task involves implementing secure session management without authentication, which requires careful handling of session IDs, data scoping, and cleanup. Security considerations make this moderately complex."
+    },
+    {
+      "taskId": 20,
+      "taskTitle": "Implement Structured Logging and Observability",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Structured Logging and Observability implementation into subtasks covering JSON logging configuration, metrics collection with Prometheus, distributed tracing with OpenTelemetry, and error monitoring with Sentry.",
+      "reasoning": "This task involves implementing multiple observability systems (logging, metrics, tracing, error monitoring) with proper configuration and integration. It requires understanding of various monitoring tools and best practices."
+    },
+    {
+      "taskId": 21,
+      "taskTitle": "Implement Data Validation and Security Measures",
+      "complexityScore": 8,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the Data Validation and Security Measures implementation into subtasks covering input validation, secure data transmission, data encryption, secure file upload, and rate limiting/abuse protection.",
+      "reasoning": "Security implementation is inherently complex and critical. This task covers multiple security aspects including validation, encryption, secure transmission, and protection against various attacks."
+    },
+    {
+      "taskId": 22,
+      "taskTitle": "Implement Visualizations for Individual Calculator",
+      "complexityScore": 6,
+      "recommendedSubtasks": 3,
+      "expansionPrompt": "Break down the Visualizations implementation into subtasks covering chart component development, interactive feature implementation, and real-time update optimization.",
+      "reasoning": "This task involves creating interactive data visualizations that update in real-time. It requires knowledge of charting libraries and optimization techniques for smooth updates."
+    },
+    {
+      "taskId": 23,
+      "taskTitle": "Implement Performance Optimizations",
+      "complexityScore": 8,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the Performance Optimizations implementation into subtasks covering frontend optimization, backend optimization, performance monitoring, API optimization, and load testing/benchmarking.",
+      "reasoning": "Performance optimization is complex as it spans the entire application stack and requires deep understanding of various optimization techniques. It involves measurement, analysis, and iterative improvement."
+    },
+    {
+      "taskId": 24,
+      "taskTitle": "Implement Comprehensive Testing Suite",
+      "complexityScore": 9,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down the Testing Suite implementation into subtasks covering unit tests, integration tests, end-to-end tests, performance tests, accessibility tests, and CI pipeline setup.",
+      "reasoning": "Creating a comprehensive testing suite is highly complex as it covers multiple testing types across the entire application. It requires significant effort to achieve good coverage and maintain the tests."
+    },
+    {
+      "taskId": 25,
+      "taskTitle": "Create Documentation and User Guides",
+      "complexityScore": 6,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the Documentation and User Guides creation into subtasks covering technical documentation, user guides, in-app help, and video tutorials/reference materials.",
+      "reasoning": "Creating comprehensive documentation requires significant effort and attention to detail. It spans technical documentation, user guides, and training materials for different audiences."
+    }
+  ]
+}

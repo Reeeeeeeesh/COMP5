@@ -1,0 +1,542 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Setup Project Repository and Structure",
+      "description": "Initialize the project repository with React 18, TypeScript 5, Vite for frontend and Python 3.11, FastAPI for backend as specified in the PRD.",
+      "details": "1. Create a new Git repository\n2. Setup frontend structure:\n   - Initialize with Vite: `npm create vite@latest frontend -- --template react-ts`\n   - Install Tailwind CSS: `npm install -D tailwindcss postcss autoprefixer`\n   - Configure Tailwind: `npx tailwindcss init -p`\n   - Setup basic folder structure (components, hooks, services, utils, types)\n3. Setup backend structure:\n   - Create Python virtual environment: `python -m venv venv`\n   - Install FastAPI: `pip install fastapi uvicorn[standard]`\n   - Install Pydantic: `pip install pydantic`\n   - Setup basic folder structure (routes, models, services, utils)\n4. Configure ESLint and Prettier for frontend\n5. Configure pre-commit hooks\n6. Create README.md with project overview and setup instructions\n7. Setup basic CI/CD pipeline for testing",
+      "testStrategy": "1. Verify that the repository structure follows best practices\n2. Ensure all development dependencies are correctly installed\n3. Verify that the frontend development server starts without errors\n4. Verify that the backend server starts without errors\n5. Run linting checks to ensure code style consistency",
+      "priority": "high",
+      "dependencies": [],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Repository Creation and Structure",
+          "description": "Set up the GitHub repository with proper naming conventions and initial folder structure",
+          "dependencies": [],
+          "details": "Create a new repository with a clear naming convention that includes project name and technology stack. Initialize with README.md, .gitignore, and LICENSE files. Set up the basic folder structure including /src, /docs, /build, and separate directories for frontend and backend code.",
+          "status": "done"
+        },
+        {
+          "id": 2,
+          "title": "Frontend Initialization",
+          "description": "Set up the frontend framework and dependencies",
+          "dependencies": [
+            1
+          ],
+          "details": "Choose and initialize the frontend framework (React, Vue, Angular, etc.). Set up package.json with necessary dependencies, configure build tools like webpack or vite, and create the initial component structure. Include asset directories for images, styles, and other static resources.",
+          "status": "done"
+        },
+        {
+          "id": 3,
+          "title": "Backend Setup",
+          "description": "Initialize the backend framework and database connections",
+          "dependencies": [
+            1
+          ],
+          "details": "Set up the backend framework (Node.js/Express, Django, Rails, etc.). Configure database connections, create initial API endpoints, and set up environment configuration. Establish folder structure for models, controllers, routes, and services.",
+          "status": "done"
+        },
+        {
+          "id": 4,
+          "title": "Linting and Formatting Configuration",
+          "description": "Set up code quality tools for consistent code style",
+          "dependencies": [
+            2,
+            3
+          ],
+          "details": "Configure ESLint, Prettier, or other linting tools appropriate for the tech stack. Create configuration files (.eslintrc, .prettierrc) with rule sets. Set up editor configuration (.editorconfig) to ensure consistent formatting across different development environments.",
+          "status": "done"
+        },
+        {
+          "id": 5,
+          "title": "Pre-commit Hooks Setup",
+          "description": "Configure Git hooks to enforce code quality before commits",
+          "dependencies": [
+            4
+          ],
+          "details": "Install and configure Husky or similar tool for Git hooks. Set up pre-commit hooks to run linters, formatters, and tests before allowing commits. Create configuration files for lint-staged to only check modified files for efficiency.",
+          "status": "done"
+        },
+        {
+          "id": 6,
+          "title": "Documentation Setup",
+          "description": "Create comprehensive project documentation structure",
+          "dependencies": [
+            1,
+            2,
+            3
+          ],
+          "details": "Set up documentation framework and structure. Create README with project overview, setup instructions, and contribution guidelines. Add API documentation templates, architecture diagrams, and developer guides. Establish a consistent documentation format and location within the repository.",
+          "status": "done"
+        },
+        {
+          "id": 7,
+          "title": "CI/CD Pipeline Configuration",
+          "description": "Set up continuous integration and deployment workflows",
+          "dependencies": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "details": "Configure GitHub Actions, Jenkins, or other CI/CD tool. Create workflow files for building, testing, and deploying the application. Set up separate environments for development, staging, and production. Configure automated testing and quality checks as part of the pipeline.",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Implement Core Calculation Engine",
+      "description": "Develop the core calculation engine as pure functions that implement the bonus formula and all intermediate calculations as specified in FR2.",
+      "details": "Create a calculation service with pure functions for:\n\n1. Base formula implementation: `FinalBonus = BaseSalary × TargetBonusPct × (InvestmentWeight × InvestmentScoreMultiplier + QualitativeWeight × QualScoreMultiplier) × RAF`\n\n2. Implement intermediate calculations:\n   - Target Bonus calculation\n   - Weighted Alpha calculation\n   - Alpha Multiplier calculation\n   - Average Qualitative Score calculation\n   - Qualitative Multiplier calculation\n   - RAF components calculation\n   - Initial Bonus calculation\n\n3. Implement cap and policy checks:\n   - 3x Base Salary cap check\n   - MRT cap check\n   - Apply the lower of the two caps if both are exceeded\n\n4. Implement RAF calculation with configurable parameters:\n   - Support for 3-year rolling average team revenues\n   - RAF Sensitivity Factor application\n   - RAF Clamp Values application (lower and upper bounds)\n\nCode should be implemented in both TypeScript (for frontend) and Python (for backend) to ensure consistent calculations in both environments.",
+      "testStrategy": "1. Unit tests for each calculation function\n2. Integration tests for the complete calculation flow\n3. Test with the truth table cases provided in section 11 of the PRD\n4. Test edge cases from section 13 of the PRD\n5. Test with invalid inputs to ensure proper error handling\n6. Benchmark performance to ensure calculations meet the <500ms requirement for individual calculations",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement Formula Component Calculations",
+          "description": "Develop the core calculation logic for each individual formula component in both TypeScript and Python, ensuring precise decimal arithmetic and type safety.",
+          "dependencies": [],
+          "details": "This includes implementing all mathematical operations required for each formula component, using libraries such as decimal.js in TypeScript and decimal or similar in Python for financial accuracy. Ensure immutability and type safety in TypeScript, and proper data validation in Python.",
+          "status": "done"
+        },
+        {
+          "id": 2,
+          "title": "Develop Cap and Policy Logic",
+          "description": "Implement the business rules for caps, limits, and policy-specific logic in both TypeScript and Python, ensuring all edge cases are handled.",
+          "dependencies": [
+            1
+          ],
+          "details": "This involves coding the logic that enforces caps, floors, and policy constraints on the calculated values, with comprehensive handling of edge cases and exceptions.",
+          "status": "done"
+        },
+        {
+          "id": 3,
+          "title": "Implement RAF (Risk Adjustment Factor) Calculation",
+          "description": "Develop the RAF calculation module in both TypeScript and Python, integrating it with the formula and cap/policy logic.",
+          "dependencies": [
+            1,
+            2
+          ],
+          "details": "This subtask covers the implementation of the RAF formula, ensuring it interacts correctly with other components and adheres to business requirements.",
+          "status": "done"
+        },
+        {
+          "id": 4,
+          "title": "Ensure Parallel Implementation Consistency",
+          "description": "Verify that the logic and results are consistent between the TypeScript and Python implementations through cross-language validation.",
+          "dependencies": [
+            1,
+            2,
+            3
+          ],
+          "details": "Establish a process for comparing outputs between the two languages, possibly using shared test vectors or golden files, and document any discrepancies for resolution.",
+          "status": "done"
+        },
+        {
+          "id": 5,
+          "title": "Develop Unit and Integration Test Coverage",
+          "description": "Create comprehensive unit and integration tests for all components in both TypeScript and Python, covering edge cases, caps, and policy logic.",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "details": "Write tests that validate individual formula components, cap/policy logic, and RAF calculations, as well as end-to-end integration tests to ensure the entire calculation engine functions as expected in both languages.",
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Design and Implement Individual Calculator UI",
+      "description": "Create an intuitive, responsive UI for individual bonus calculations with real-time updates as specified in FR1.",
+      "details": "1. Design a clean, well-organized layout with clear sections for inputs, parameters, and results\n2. Implement form components with appropriate input controls:\n   - Numeric inputs for salaries, percentages, scores, revenue figures\n   - Sliders for selecting weights\n   - Dropdowns for predefined parameter sets\n   - Clear labels and tooltips for all fields\n3. Implement real-time calculation updates when inputs change\n4. Add validation for all input fields with appropriate error messages\n5. Ensure responsive design works on desktop, tablet, and mobile devices\n6. Implement clear visual indicators for alerts (e.g., bonus exceeding 3x base salary)\n7. Create a calculation breakdown display that shows all intermediate steps\n8. Use Tailwind CSS for styling as specified in the PRD\n\nComponents to create:\n- InputField (reusable numeric input with validation)\n- Slider (for weights and other percentage inputs)\n- ToolTip (for explanatory text)\n- ResultDisplay (for showing the final bonus amount)\n- BreakdownTable (for showing calculation steps)\n- AlertBanner (for policy breaches)",
+      "testStrategy": "1. Unit tests for all UI components\n2. Integration tests for form validation\n3. E2E tests for complete calculation flow\n4. Responsive design tests across different screen sizes\n5. Accessibility testing (WCAG 2.1 Level AA)\n6. Performance testing to ensure UI updates within 500ms\n7. User testing with representative users from the target audience",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2
+      ],
+      "status": "pending",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Design layout and component architecture",
+          "description": "Create wireframes and define the overall UI structure for the calculator interface",
+          "dependencies": [],
+          "details": "Design the overall layout including header, input sections, results display, and calculation breakdown area. Create responsive grid system that works across devices. Define component hierarchy and data flow between components. Prepare design mockups for approval before implementation.",
+          "status": "pending"
+        },
+        {
+          "id": 2,
+          "title": "Implement input components with validation",
+          "description": "Develop all form input elements with appropriate validation logic",
+          "dependencies": [
+            1
+          ],
+          "details": "Create reusable input components (text fields, dropdowns, sliders, etc.) with proper labeling and accessibility features. Implement client-side validation for each input type with appropriate error messages. Add input masking for specialized fields (currency, percentages, etc.). Ensure tab navigation works correctly between inputs.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "Build real-time calculation engine",
+          "description": "Implement the logic for performing calculations as users input values",
+          "dependencies": [
+            2
+          ],
+          "details": "Create calculation service that processes input values and returns results. Implement debouncing to prevent excessive calculations during rapid input. Add event listeners to trigger recalculations when inputs change. Develop formula parser if complex calculations are needed. Ensure calculations handle edge cases and invalid inputs gracefully.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Develop results display with breakdown",
+          "description": "Create the UI components that show calculation results and detailed breakdowns",
+          "dependencies": [
+            3
+          ],
+          "details": "Design and implement the results display area with clear formatting. Create expandable/collapsible sections for detailed calculation breakdowns. Add visualization components (charts, graphs) if needed. Implement print/export functionality for results. Ensure results update smoothly without jarring UI changes.",
+          "status": "pending"
+        },
+        {
+          "id": 5,
+          "title": "Implement responsive design and final styling",
+          "description": "Ensure the UI works across all device sizes and apply final visual styling",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "details": "Test and refine responsive behavior across mobile, tablet, and desktop viewports. Implement media queries for layout adjustments at different breakpoints. Apply final visual styling according to design system (colors, typography, spacing, etc.). Add transitions and animations for improved user experience. Conduct final accessibility review (contrast, keyboard navigation, screen reader compatibility).",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Implement Investment Performance Component",
+      "description": "Develop the investment performance component of the calculator with adjustable parameters as specified in FR3.2.",
+      "details": "1. Create UI components for investment performance inputs:\n   - Input fields for individual fund alphas (in basis points)\n   - Input fields for AUM weight per fund\n   - Adjustable parameters for the alpha-to-multiplier mapping curve\n   - Input for the overall Investment Weight\n\n2. Implement calculation functions:\n   - Calculate weighted alpha based on individual fund alphas and AUM weights\n   - Implement the alpha-to-multiplier mapping function with configurable parameters\n   - Calculate the investment component contribution to the bonus\n\n3. Provide option to input the Investment Score Multiplier directly as an alternative\n\n4. Implement real-time updates of the investment component as inputs change\n\n5. Add validation for all inputs with appropriate constraints\n\nThe alpha-to-multiplier mapping should support configuration of:\n- Alpha value for 1x payout\n- Alpha value for max payout\n- Maximum payout multiplier",
+      "testStrategy": "1. Unit tests for all calculation functions\n2. Test with various alpha values and weights to verify correct multiplier calculation\n3. Test the direct input option for Investment Score Multiplier\n4. Test edge cases (very high/low alpha values)\n5. Verify real-time updates work correctly\n6. Test with the truth table cases from section 11 of the PRD",
+      "priority": "medium",
+      "dependencies": [
+        2,
+        3
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 5,
+      "title": "Implement Qualitative Performance Component",
+      "description": "Develop the qualitative performance component of the calculator with adjustable parameters as specified in FR3.3.",
+      "details": "1. Create UI components for qualitative performance inputs:\n   - Input fields for individual qualitative scores (Risk, Compliance, Teamwork, ESG, Client Outcomes)\n   - Adjustable parameters for the score-to-multiplier mapping curve\n   - Input for the overall Qualitative Weight\n\n2. Implement calculation functions:\n   - Calculate average qualitative score from individual scores\n   - Implement the score-to-multiplier mapping function with configurable parameters\n   - Calculate the qualitative component contribution to the bonus\n\n3. Provide option to input the Qualitative Score Multiplier directly as an alternative\n\n4. Implement real-time updates of the qualitative component as inputs change\n\n5. Add validation for all inputs with appropriate constraints\n\nThe score-to-multiplier mapping should support configuration of:\n- Score thresholds for 0x, 1x, 1.2x multipliers\n- Custom mapping points if needed",
+      "testStrategy": "1. Unit tests for all calculation functions\n2. Test with various qualitative scores to verify correct multiplier calculation\n3. Test the direct input option for Qualitative Score Multiplier\n4. Test edge cases (very high/low scores)\n5. Verify real-time updates work correctly\n6. Test with the truth table cases from section 11 of the PRD",
+      "priority": "medium",
+      "dependencies": [
+        2,
+        3
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 6,
+      "title": "Implement Revenue Adjustment Factor (RAF) Component",
+      "description": "Develop the RAF component of the calculator with adjustable parameters as specified in FR3.4.",
+      "details": "1. Create UI components for RAF inputs:\n   - Input fields for 3-year rolling average team revenues\n   - Input fields for individual yearly revenues for relevant periods\n   - Adjustable RAF Sensitivity Factor\n   - Adjustable RAF Clamp Values (lower and upper bounds)\n\n2. Implement calculation functions for both RAF models:\n   - Standard RAF calculation based on 3-year rolling averages\n   - Alternative RAF calculation based on revenue_actual and rev_adjust_ref\n   - Apply sensitivity factor and clamp values\n\n3. Provide option to input the final RAF value directly as an alternative\n\n4. Implement real-time updates of the RAF component as inputs change\n\n5. Add validation for all inputs with appropriate constraints\n\nThe implementation should support both RAF models mentioned in the PRD:\n- Standard model using 3-year rolling average team revenues\n- Alternative model using revenue_actual and rev_adjust_ref",
+      "testStrategy": "1. Unit tests for all RAF calculation functions\n2. Test both RAF models with various revenue inputs\n3. Test the direct input option for final RAF value\n4. Test edge cases (very high/low revenues, negative RAF before clamping)\n5. Verify real-time updates work correctly\n6. Test with the truth table cases from section 11 of the PRD\n7. Test edge cases from section 13 of the PRD, particularly T6 and T8 which involve RAF clamping",
+      "priority": "medium",
+      "dependencies": [
+        2,
+        3
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 7,
+      "title": "Implement Policy & Cap Adjustments",
+      "description": "Implement the policy and cap adjustment features as specified in FR3.5, including MRT Cap and salary band breach alerts.",
+      "details": "1. Create UI components for policy and cap inputs:\n   - Input field for MRT Cap Percentage\n   - Interface for defining salary bands\n\n2. Implement calculation functions:\n   - Apply MRT Cap to calculated bonus\n   - Apply 3x Base Salary cap to calculated bonus\n   - Check for salary band breaches\n\n3. Implement alert system for policy breaches:\n   - Visual indicator when Final Bonus > 3 × Base Salary\n   - Visual indicator when bonus is capped by MRT Cap\n   - Visual indicator for salary band breaches\n\n4. Add toggle for enabling/disabling specific caps\n\n5. Ensure cap application follows the correct precedence (apply the lower of multiple caps)\n\nThe implementation should handle all edge cases from the truth table in section 13 of the PRD, particularly T4 and T5 which involve cap application.",
+      "testStrategy": "1. Unit tests for all cap calculation functions\n2. Test scenarios where different caps are applied\n3. Test scenarios where multiple caps could apply to verify correct precedence\n4. Verify alert displays work correctly for each type of policy breach\n5. Test with the truth table cases from section 11 of the PRD, particularly T4 and T5\n6. Test with edge cases where caps are just barely exceeded or just barely not exceeded",
+      "priority": "medium",
+      "dependencies": [
+        2,
+        3
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 8,
+      "title": "Implement Scenario Saving and Loading for Individual Calculations",
+      "description": "Develop functionality to save and load individual calculation scenarios as specified in FR6.1 and FR6.2.",
+      "details": "1. Design and implement UI for scenario management:\n   - Input field for scenario name\n   - Save button to store current parameters\n   - Dropdown or list to select saved scenarios\n   - Delete button to remove saved scenarios\n\n2. Implement client-side storage for scenarios:\n   - Use browser localStorage for client-side storage\n   - Define a clear data structure for storing all scenario parameters\n   - Implement functions to serialize/deserialize scenario data\n\n3. Implement scenario management functions:\n   - Save current parameters as a named scenario\n   - Load parameters from a saved scenario\n   - Delete saved scenarios\n   - List all saved scenarios\n\n4. Add validation for scenario names (no duplicates, required field)\n\n5. Implement error handling for storage failures\n\nThe saved scenario should include all input parameters:\n- Base Salary\n- Target Bonus Percentage\n- Investment performance parameters\n- Qualitative performance parameters\n- RAF parameters\n- Policy & cap parameters",
+      "testStrategy": "1. Unit tests for scenario save/load functions\n2. Test saving scenarios with various parameter combinations\n3. Test loading scenarios and verify all parameters are correctly restored\n4. Test error handling for storage failures\n5. Test with very large scenarios to ensure storage limits are handled\n6. Test scenario name validation\n7. Test deleting scenarios",
+      "priority": "medium",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 9,
+      "title": "Implement Side-by-Side Scenario Comparison",
+      "description": "Develop functionality to compare two saved individual scenarios side by side as specified in FR5.2.",
+      "details": "1. Design and implement UI for scenario comparison:\n   - Dropdown selectors for choosing two scenarios to compare\n   - Side-by-side display of inputs and outputs for both scenarios\n   - Visual indicators for differences between scenarios\n\n2. Implement comparison logic:\n   - Load two selected scenarios\n   - Calculate results for both scenarios\n   - Identify differences in inputs and outputs\n   - Highlight significant differences\n\n3. Create a tabular view showing:\n   - Input parameters for both scenarios\n   - Intermediate calculation results for both scenarios\n   - Final bonus amounts for both scenarios\n   - Percentage or absolute difference between final bonuses\n\n4. Add option to export comparison as CSV\n\nThe comparison should clearly show which inputs differ between scenarios and how those differences affect the final bonus calculation.",
+      "testStrategy": "1. Unit tests for comparison functions\n2. Test comparing scenarios with various differences\n3. Test the highlighting of differences\n4. Test the export functionality\n5. Test with edge cases (very similar scenarios, very different scenarios)\n6. Verify that the comparison is clear and understandable",
+      "priority": "low",
+      "dependencies": [
+        8
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 10,
+      "title": "Implement Sensitivity Analysis for Individual Calculations",
+      "description": "Develop sensitivity analysis functionality with sliders for key inputs as specified in FR5.3.",
+      "details": "1. Design and implement UI for sensitivity analysis:\n   - Sliders for key inputs (Investment Score, Qualitative Score, RAF, etc.)\n   - Real-time display of how changing each input affects the final bonus\n   - Visual representation of sensitivity (e.g., small chart showing impact)\n\n2. Implement sensitivity calculation functions:\n   - Calculate bonus for a range of values for each key input\n   - Determine which inputs have the greatest impact on the final bonus\n   - Calculate percentage change in bonus for a given percentage change in input\n\n3. Create visual representations of sensitivity:\n   - Mini-charts showing bonus amount vs. input value\n   - Color coding to indicate high/medium/low sensitivity\n\n4. Ensure real-time updates as sliders are moved\n\nThe sensitivity analysis should help users understand which inputs have the greatest impact on the final bonus calculation and how changes to those inputs affect the result.",
+      "testStrategy": "1. Unit tests for sensitivity calculation functions\n2. Test with various input ranges to verify correct sensitivity calculations\n3. Test the real-time updates as sliders are moved\n4. Test with edge cases (inputs near caps or clamps)\n5. Verify that the visual representations accurately reflect the sensitivity\n6. Performance testing to ensure smooth slider operation",
+      "priority": "medium",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 11,
+      "title": "Implement Export Functionality for Individual Calculations",
+      "description": "Develop functionality to export individual calculation results to CSV or printable view as specified in FR4.4.",
+      "details": "1. Design and implement UI for export options:\n   - Button or menu for export options\n   - Options for CSV export or printable view\n\n2. Implement export functions:\n   - Generate CSV file with all inputs, intermediate calculations, and results\n   - Create printable view with formatted calculation breakdown\n\n3. Include in the export:\n   - All input parameters\n   - All intermediate calculation results\n   - Final bonus amount\n   - Any alerts or policy breaches\n   - Timestamp and scenario name (if applicable)\n\n4. Ensure exported data is well-formatted and easy to understand\n\n5. Add option to include or exclude certain sections in the export\n\nThe export functionality should provide a complete record of the calculation that can be saved, shared, or printed.",
+      "testStrategy": "1. Unit tests for export functions\n2. Test CSV generation with various calculation scenarios\n3. Test printable view formatting\n4. Verify that all relevant data is included in the export\n5. Test with edge cases (very large numbers, special characters in inputs)\n6. Test browser compatibility for export functionality",
+      "priority": "low",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 12,
+      "title": "Design and Implement Database Schema",
+      "description": "Design and implement the database schema for storing batch data, scenarios, and calculation results as needed for the batch processing functionality.",
+      "details": "1. Design database schema for:\n   - Batch uploads (temporary storage)\n   - Batch scenarios (saved parameter sets)\n   - Batch calculation results\n   - Session management for anonymous users\n\n2. Implement database migrations using Alembic:\n   - Create initial migration for core tables\n   - Set up indexes for performance\n   - Configure constraints for data integrity\n\n3. Implement data models using SQLAlchemy and Pydantic:\n   - Define ORM models for all tables\n   - Define Pydantic models for API validation\n   - Ensure models match the data dictionary in section 12.1 of the PRD\n\n4. Implement data access layer:\n   - CRUD operations for all entities\n   - Query functions for common operations\n   - Transaction management\n\n5. Implement data retention policy:\n   - Automatic deletion of temporary batch data after 24 hours\n   - Cleanup of old calculation results\n\n6. Ensure proper encryption of sensitive data\n\nThe database schema should be designed to support efficient batch processing and scenario management while maintaining data security and privacy.",
+      "testStrategy": "1. Unit tests for all data models and CRUD operations\n2. Integration tests with a test database\n3. Test data migration scripts\n4. Test data retention policy\n5. Performance testing with large datasets\n6. Security testing for data encryption\n7. Test concurrent access scenarios",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "status": "done",
+      "subtasks": []
+    },
+    {
+      "id": 13,
+      "title": "Implement Batch Input Interface",
+      "description": "Develop the interface for uploading and configuring batch employee data as specified in FR7.1.",
+      "details": "1. Design and implement UI for batch data upload:\n   - File upload component for CSV/Excel files\n   - Template download option\n   - Column mapping interface\n   - Data validation feedback\n\n2. Implement backend API for batch data upload:\n   - Endpoint for receiving uploaded files\n   - File parsing and validation\n   - Temporary storage of uploaded data\n   - Error reporting for invalid data\n\n3. Create downloadable templates for batch data:\n   - CSV template with all required columns\n   - Example data for reference\n\n4. Implement column mapping functionality:\n   - UI for mapping uploaded columns to required fields\n   - Automatic mapping suggestion based on column names\n   - Validation of mapping completeness\n\n5. Implement data validation:\n   - Check for required fields\n   - Validate data types and ranges\n   - Provide clear error messages for invalid data\n   - Show validation summary with counts of valid/invalid rows\n\nThe batch input interface should make it easy for users to upload employee data, validate it, and prepare it for batch calculation.",
+      "testStrategy": "1. Unit tests for file parsing and validation functions\n2. Test with various CSV formats and structures\n3. Test column mapping functionality\n4. Test validation of required fields and data types\n5. Test error reporting for invalid data\n6. Test with large files to ensure performance\n7. Test template download functionality\n8. Test with malformed files to ensure proper error handling",
+      "priority": "high",
+      "dependencies": [
+        1,
+        12
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 14,
+      "title": "Implement Batch Parameter Configuration",
+      "description": "Develop functionality for configuring global and individual parameters for batch calculations as specified in FR7.2.",
+      "details": "1. Design and implement UI for batch parameter configuration:\n   - Form for setting global parameters\n   - Table view of uploaded employee data\n   - Interface for overriding global parameters for individual employees\n\n2. Implement parameter management functions:\n   - Set global parameters for the entire batch\n   - Override parameters for individual employees\n   - Reset overrides to global values\n   - Validate parameter combinations\n\n3. Create a data grid component for employee data:\n   - Display uploaded employee data in a table\n   - Allow inline editing of parameters\n   - Show validation errors\n   - Support sorting and filtering\n\n4. Implement parameter inheritance logic:\n   - Apply global parameters to all employees\n   - Override with individual parameters from uploaded data\n   - Override with manually edited parameters\n\n5. Add validation for parameter combinations\n\nThe batch parameter configuration should allow users to efficiently set parameters for the entire batch while still allowing for individual adjustments where needed.",
+      "testStrategy": "1. Unit tests for parameter management functions\n2. Test global parameter application\n3. Test parameter overrides for individual employees\n4. Test validation of parameter combinations\n5. Test the data grid component for displaying and editing employee data\n6. Test with large datasets to ensure performance\n7. Test parameter inheritance logic with various scenarios",
+      "priority": "high",
+      "dependencies": [
+        13
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 15,
+      "title": "Implement Batch Processing Engine",
+      "description": "Develop the backend engine for processing batch calculations efficiently as specified in FR7.3.",
+      "details": "1. Design and implement batch processing architecture:\n   - Asynchronous task queue using Celery with Redis or RabbitMQ\n   - Worker processes for handling batch calculations\n   - Progress tracking and reporting\n\n2. Implement batch calculation functions:\n   - Process multiple employee records efficiently\n   - Apply global and individual parameters correctly\n   - Calculate bonuses for all employees\n   - Store calculation results\n   - Handle errors gracefully\n\n3. Optimize for performance:\n   - Parallel processing where possible\n   - Efficient database operations\n   - Batched updates\n\n4. Implement progress tracking:\n   - Track percentage completion\n   - Estimate remaining time\n   - Report errors for individual records\n\n5. Add monitoring and logging:\n   - Log calculation events\n   - Track performance metrics\n   - Monitor resource usage\n\nThe batch processing engine should be able to handle large batches (up to 500-1000 employees) efficiently while providing feedback on progress and handling errors gracefully.",
+      "testStrategy": "1. Unit tests for batch calculation functions\n2. Integration tests for the complete batch processing flow\n3. Performance testing with various batch sizes\n4. Test error handling with invalid data\n5. Test progress tracking accuracy\n6. Test resource usage under load\n7. Test recovery from failures\n8. Test with the truth table cases from section 11 of the PRD applied to multiple employees",
+      "priority": "high",
+      "dependencies": [
+        2,
+        12,
+        14
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 16,
+      "title": "Implement Batch Results Display",
+      "description": "Develop the interface for displaying batch calculation results as specified in FR7.4.",
+      "details": "1. Design and implement UI for batch results display:\n   - Tabular view of calculation results for all employees\n   - Summary statistics section\n   - Filtering and sorting options\n   - Detail view for individual employee calculations\n\n2. Implement data grid component for results:\n   - Display all relevant columns (Base Salary, Target Bonus, Calculated RAF, Investment Multiplier, Qualitative Multiplier, Initial Bonus, Final Bonus)\n   - Show visual indicators for caps and alerts\n   - Support sorting and filtering\n   - Support pagination for large results\n\n3. Implement summary statistics:\n   - Calculate and display total bonus payout\n   - Calculate and display average bonus\n   - Show count of employees with capped bonuses\n   - Show other relevant statistics\n\n4. Implement detail view:\n   - Show complete calculation breakdown for selected employee\n   - Display all intermediate steps\n   - Show applied parameters\n\n5. Add search functionality for finding specific employees\n\nThe batch results display should provide a clear overview of the calculation results while allowing users to drill down into details for individual employees.",
+      "testStrategy": "1. Unit tests for summary statistics calculations\n2. Test the data grid component with various result sets\n3. Test filtering and sorting functionality\n4. Test pagination with large result sets\n5. Test the detail view for individual employees\n6. Test search functionality\n7. Test with various screen sizes to ensure responsive design\n8. Performance testing with large result sets",
+      "priority": "high",
+      "dependencies": [
+        15
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 17,
+      "title": "Implement Batch Export Functionality",
+      "description": "Develop functionality to export batch calculation results to CSV or Excel as specified in FR7.5.",
+      "details": "1. Design and implement UI for batch export options:\n   - Button or menu for export options\n   - Options for CSV or Excel export\n   - Options for selecting which columns to include\n\n2. Implement export functions:\n   - Generate CSV file with calculation results for all employees\n   - Generate Excel file with formatted results and possibly multiple sheets\n   - Include all relevant data (inputs, intermediate calculations, results, alerts)\n\n3. Optimize for large exports:\n   - Stream data to file rather than loading all in memory\n   - Show progress indicator for large exports\n   - Handle timeouts gracefully\n\n4. Format exported data for readability:\n   - Include headers and column descriptions\n   - Format numbers appropriately (currency, percentages)\n   - Highlight alerts and caps\n\n5. Include metadata in export:\n   - Timestamp\n   - Batch name/ID\n   - Summary statistics\n   - Applied global parameters\n\nThe batch export functionality should provide a complete record of the calculation results that can be saved, shared, or imported into other systems.",
+      "testStrategy": "1. Unit tests for export functions\n2. Test CSV and Excel generation with various result sets\n3. Test with large datasets to ensure performance\n4. Verify that all relevant data is included in the export\n5. Test formatting of numbers and dates\n6. Test inclusion of metadata\n7. Test with various browsers to ensure compatibility",
+      "priority": "medium",
+      "dependencies": [
+        16
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 18,
+      "title": "Implement Batch Scenario Management",
+      "description": "Develop functionality to save and load batch scenarios as specified in FR6.4.",
+      "details": "1. Design and implement UI for batch scenario management:\n   - Input field for scenario name\n   - Save button to store current batch parameters\n   - Dropdown or list to select saved batch scenarios\n   - Delete button to remove saved batch scenarios\n\n2. Implement server-side storage for batch scenarios:\n   - Database tables for storing batch scenarios\n   - API endpoints for CRUD operations\n   - Data structure for storing all batch parameters and employee data references\n\n3. Implement batch scenario management functions:\n   - Save current batch parameters as a named scenario\n   - Load parameters from a saved batch scenario\n   - Delete saved batch scenarios\n   - List all saved batch scenarios\n\n4. Add validation for scenario names and data\n\n5. Implement security measures to protect scenario data\n\nThe batch scenario management should allow users to save and reuse complex batch configurations without having to recreate them each time.",
+      "testStrategy": "1. Unit tests for scenario save/load functions\n2. Integration tests with the database\n3. Test saving scenarios with various parameter combinations\n4. Test loading scenarios and verify all parameters are correctly restored\n5. Test error handling for storage failures\n6. Test scenario name validation\n7. Test deleting scenarios\n8. Test security measures",
+      "priority": "medium",
+      "dependencies": [
+        14,
+        15
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 19,
+      "title": "Implement Session Management for Anonymous Users",
+      "description": "Develop session management for anonymous users to securely handle batch data without requiring authentication as specified in section 15.",
+      "details": "1. Design and implement session management system:\n   - Generate secure session IDs for anonymous users\n   - Store session data securely\n   - Implement session timeout (24 hours as specified in section 15)\n   - Handle session recovery (e.g., via browser cookie or local storage)\n\n2. Implement data scoping based on session:\n   - Associate uploaded batch data with session ID\n   - Scope batch scenarios to session ID\n   - Ensure users can only access their own data\n\n3. Implement data cleanup:\n   - Automatically delete data after session timeout (24 hours)\n   - Delete data after batch job completion if requested\n   - Provide option for manual data deletion\n\n4. Add session management UI elements:\n   - Session status indicator\n   - Session timeout warning\n   - Option to extend session\n\n5. Implement security measures to prevent session hijacking\n\nThe session management system should provide a secure way to handle user data without requiring authentication while still ensuring data privacy and implementing proper data retention policies.",
+      "testStrategy": "1. Unit tests for session management functions\n2. Test session creation and validation\n3. Test data scoping to ensure users can only access their own data\n4. Test session timeout and data cleanup\n5. Test session recovery after browser refresh\n6. Security testing for session ID generation and protection\n7. Test concurrent sessions from the same browser\n8. Test session handling across different browsers and devices",
+      "priority": "medium",
+      "dependencies": [
+        12
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 20,
+      "title": "Implement Structured Logging and Observability",
+      "description": "Implement structured logging, metrics collection, and error monitoring as specified in NFR 7.",
+      "details": "1. Implement structured JSON logging:\n   - Configure logging at INFO level for business events\n   - Configure logging at DEBUG level for calculation internals\n   - Configure logging at ERROR level for stack traces\n   - Ensure PII redaction (hash base_salary and employee_id in logs)\n\n2. Implement metrics collection using Prometheus:\n   - Track bonus_calc_duration_seconds (histogram, labeled mode=individual|batch)\n   - Track batch_job_rows_total (counter)\n   - Track bonus_cap_applied_total (counter, labeled type=3x|mrt)\n   - Configure Prometheus client and endpoints\n\n3. Implement distributed tracing:\n   - Configure OpenTelemetry\n   - Inject trace-ids into every log line\n   - Create spans for key operations\n\n4. Implement error monitoring with Sentry:\n   - Configure Sentry DSN\n   - Forward uncaught exceptions with calculation context\n   - Add custom context to error reports\n\n5. Create dashboards for monitoring system health and performance\n\nThe observability implementation should provide comprehensive visibility into the system's operation, performance, and errors to facilitate troubleshooting and optimization.",
+      "testStrategy": "1. Verify log format and content at different log levels\n2. Test PII redaction in logs\n3. Verify metrics are correctly registered and updated\n4. Test trace propagation across service boundaries\n5. Test error reporting to Sentry\n6. Verify dashboard functionality\n7. Test under load to ensure logging doesn't impact performance\n8. Verify logs contain all required information for troubleshooting",
+      "priority": "medium",
+      "dependencies": [
+        1
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 21,
+      "title": "Implement Data Validation and Security Measures",
+      "description": "Implement comprehensive data validation and security measures as specified in NFR2.",
+      "details": "1. Implement input validation:\n   - Validate all user inputs on both client and server side\n   - Implement type checking and range validation\n   - Sanitize inputs to prevent injection attacks\n   - Provide clear error messages for invalid inputs\n\n2. Implement secure data transmission:\n   - Configure HTTPS for all data transmission\n   - Implement proper CORS policies\n   - Set secure and HTTP-only flags for cookies\n\n3. Implement data encryption:\n   - Encrypt sensitive data at rest\n   - Use secure encryption algorithms and key management\n\n4. Implement secure file upload:\n   - Validate file types and sizes\n   - Scan uploaded files for malware\n   - Store uploaded files securely\n\n5. Implement rate limiting and protection against abuse:\n   - Add rate limiting for API endpoints\n   - Implement CSRF protection\n   - Add protection against brute force attacks\n\n6. Create a data privacy policy and user agreement\n\nThe security implementation should protect user data and the system from various threats while ensuring compliance with UK GDPR and other relevant regulations.",
+      "testStrategy": "1. Penetration testing for common vulnerabilities\n2. Test input validation with various invalid inputs\n3. Verify HTTPS configuration and certificate validity\n4. Test file upload with various file types and sizes\n5. Test rate limiting and CSRF protection\n6. Verify data encryption at rest\n7. Test for common security issues (OWASP Top 10)\n8. Conduct a security review of the entire application",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 22,
+      "title": "Implement Visualizations for Individual Calculator",
+      "description": "Implement visual representations of calculation components and sensitivity as specified in FR1.5.",
+      "details": "1. Design and implement visualization components:\n   - Pie chart for bonus composition (showing relative contribution of investment and qualitative components)\n   - Bar chart for sensitivity analysis (showing impact of changes to key inputs)\n   - Line chart for parameter mapping curves (e.g., alpha-to-multiplier, score-to-multiplier)\n\n2. Implement interactive features:\n   - Tooltips showing exact values\n   - Ability to toggle between different visualization types\n   - Highlighting of relevant sections based on user interaction\n\n3. Ensure visualizations update in real-time as inputs change\n\n4. Make visualizations accessible and include alternative text representations\n\n5. Optimize visualizations for performance\n\nThe visualizations should help users understand the composition of the bonus calculation and the impact of different inputs on the final result.",
+      "testStrategy": "1. Unit tests for visualization components\n2. Test visualizations with various data sets\n3. Test real-time updates as inputs change\n4. Test accessibility features\n5. Test performance with frequent updates\n6. Test browser compatibility\n7. User testing to ensure visualizations are intuitive and helpful",
+      "priority": "low",
+      "dependencies": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        10
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 23,
+      "title": "Implement Performance Optimizations",
+      "description": "Implement performance optimizations to meet the requirements specified in NFR1.",
+      "details": "1. Optimize frontend performance:\n   - Implement code splitting and lazy loading\n   - Optimize bundle size\n   - Implement memoization for expensive calculations\n   - Use efficient rendering techniques (e.g., virtualized lists for large data sets)\n   - Optimize state management to minimize re-renders\n\n2. Optimize backend performance:\n   - Implement database query optimization\n   - Use appropriate indexes\n   - Implement caching where appropriate\n   - Optimize batch processing with parallel execution\n   - Implement efficient file parsing for batch uploads\n\n3. Implement performance monitoring:\n   - Track key performance metrics\n   - Set up alerts for performance degradation\n   - Create performance dashboards\n\n4. Optimize API communication:\n   - Minimize payload sizes\n   - Implement pagination for large data sets\n   - Use efficient data formats\n\n5. Implement load testing and performance benchmarking\n\nThe performance optimizations should ensure that the application meets the specified performance requirements: <500ms for individual calculations, <3 seconds for page load, and appropriate processing times for batch calculations.",
+      "testStrategy": "1. Performance benchmarking for individual calculations\n2. Load testing for batch processing\n3. Measure and verify page load times\n4. Test with large datasets to ensure performance at scale\n5. Profile CPU and memory usage\n6. Test on various devices and network conditions\n7. Verify that optimizations don't compromise functionality or accuracy",
+      "priority": "medium",
+      "dependencies": [
+        3,
+        15,
+        16
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 24,
+      "title": "Implement Comprehensive Testing Suite",
+      "description": "Implement a comprehensive testing suite to ensure the application meets all functional and non-functional requirements.",
+      "details": "1. Implement unit tests:\n   - Test all calculation functions\n   - Test UI components\n   - Test API endpoints\n   - Test data validation\n\n2. Implement integration tests:\n   - Test complete calculation flows\n   - Test batch processing end-to-end\n   - Test database interactions\n\n3. Implement end-to-end tests:\n   - Test user workflows for individual calculations\n   - Test user workflows for batch processing\n   - Test error handling and edge cases\n\n4. Implement performance tests:\n   - Test calculation speed for individual calculations\n   - Test batch processing performance\n   - Test UI responsiveness\n\n5. Implement accessibility tests:\n   - Test compliance with WCAG 2.1 Level AA\n   - Test keyboard navigation\n   - Test screen reader compatibility\n\n6. Set up continuous integration pipeline:\n   - Run tests automatically on code changes\n   - Generate test coverage reports\n   - Enforce minimum test coverage\n\n7. Implement test data generation:\n   - Create test data for various scenarios\n   - Include edge cases from the truth tables in sections 11 and 13 of the PRD\n\nThe testing suite should provide comprehensive coverage of the application's functionality and ensure that it meets all requirements.",
+      "testStrategy": "1. Verify test coverage for all components and functions\n2. Test with the truth table cases from sections 11 and 13 of the PRD\n3. Test with edge cases and invalid inputs\n4. Test accessibility compliance\n5. Test performance under various conditions\n6. Test browser compatibility\n7. Test on various devices and screen sizes",
+      "priority": "high",
+      "dependencies": [
+        1,
+        2,
+        3,
+        15,
+        16
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 25,
+      "title": "Create Documentation and User Guides",
+      "description": "Create comprehensive documentation and user guides for the application.",
+      "details": "1. Create technical documentation:\n   - System architecture overview\n   - API documentation\n   - Database schema documentation\n   - Deployment guide\n   - Development setup guide\n\n2. Create user guides:\n   - Getting started guide\n   - Individual calculator user guide\n   - Batch processing user guide\n   - Troubleshooting guide\n   - FAQ\n\n3. Create in-app help:\n   - Tooltips for input fields\n   - Contextual help for complex features\n   - Guided tours for new users\n\n4. Create video tutorials:\n   - Basic usage tutorial\n   - Advanced features tutorial\n   - Batch processing tutorial\n\n5. Create printable reference materials:\n   - Quick reference guide\n   - Calculation formula reference\n   - Glossary of terms\n\nThe documentation should be clear, comprehensive, and accessible to users with varying levels of technical expertise.",
+      "testStrategy": "1. Review documentation for accuracy and completeness\n2. Test in-app help functionality\n3. User testing of documentation with representative users\n4. Verify that documentation is up-to-date with the latest features\n5. Test video tutorials for clarity and usefulness\n6. Verify that printable materials are formatted correctly",
+      "priority": "medium",
+      "dependencies": [
+        3,
+        16
+      ],
+      "status": "pending",
+      "subtasks": []
+    }
+  ]
+}

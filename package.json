@@ -1,0 +1,28 @@
+{
+  "name": "flexible-variable-compensation-calculator",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "lint:frontend": "cd frontend; npm run lint",
+    "lint:backend": "cd backend; .\\venv\\Scripts\\python -m flake8",
+    "format:frontend": "cd frontend; npm run format",
+    "format:backend": "cd backend; .\\venv\\Scripts\\python -m black app tests",
+    "test:frontend": "cd frontend; npm run test",
+    "test:backend": "cd backend; .\\venv\\Scripts\\python -m pytest"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^15.0.2"
+  },
+  "lint-staged": {
+    "frontend/**/*.{js,jsx,ts,tsx}": [
+      "cd frontend; npm run lint:fix",
+      "cd frontend; npm run format"
+    ],
+    "backend/**/*.py": [
+      "cd backend; .\\venv\\Scripts\\python -m black",
+      "cd backend; .\\venv\\Scripts\\python -m flake8"
+    ]
+  }
+}

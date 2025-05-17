@@ -1,0 +1,42 @@
+# Task ID: 20
+# Title: Implement Structured Logging and Observability
+# Status: pending
+# Dependencies: 1
+# Priority: medium
+# Description: Implement structured logging, metrics collection, and error monitoring as specified in NFR 7.
+# Details:
+1. Implement structured JSON logging:
+   - Configure logging at INFO level for business events
+   - Configure logging at DEBUG level for calculation internals
+   - Configure logging at ERROR level for stack traces
+   - Ensure PII redaction (hash base_salary and employee_id in logs)
+
+2. Implement metrics collection using Prometheus:
+   - Track bonus_calc_duration_seconds (histogram, labeled mode=individual|batch)
+   - Track batch_job_rows_total (counter)
+   - Track bonus_cap_applied_total (counter, labeled type=3x|mrt)
+   - Configure Prometheus client and endpoints
+
+3. Implement distributed tracing:
+   - Configure OpenTelemetry
+   - Inject trace-ids into every log line
+   - Create spans for key operations
+
+4. Implement error monitoring with Sentry:
+   - Configure Sentry DSN
+   - Forward uncaught exceptions with calculation context
+   - Add custom context to error reports
+
+5. Create dashboards for monitoring system health and performance
+
+The observability implementation should provide comprehensive visibility into the system's operation, performance, and errors to facilitate troubleshooting and optimization.
+
+# Test Strategy:
+1. Verify log format and content at different log levels
+2. Test PII redaction in logs
+3. Verify metrics are correctly registered and updated
+4. Test trace propagation across service boundaries
+5. Test error reporting to Sentry
+6. Verify dashboard functionality
+7. Test under load to ensure logging doesn't impact performance
+8. Verify logs contain all required information for troubleshooting

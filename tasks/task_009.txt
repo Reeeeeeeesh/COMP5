@@ -1,0 +1,35 @@
+# Task ID: 9
+# Title: Implement Side-by-Side Scenario Comparison
+# Status: pending
+# Dependencies: 8
+# Priority: low
+# Description: Develop functionality to compare two saved individual scenarios side by side as specified in FR5.2.
+# Details:
+1. Design and implement UI for scenario comparison:
+   - Dropdown selectors for choosing two scenarios to compare
+   - Side-by-side display of inputs and outputs for both scenarios
+   - Visual indicators for differences between scenarios
+
+2. Implement comparison logic:
+   - Load two selected scenarios
+   - Calculate results for both scenarios
+   - Identify differences in inputs and outputs
+   - Highlight significant differences
+
+3. Create a tabular view showing:
+   - Input parameters for both scenarios
+   - Intermediate calculation results for both scenarios
+   - Final bonus amounts for both scenarios
+   - Percentage or absolute difference between final bonuses
+
+4. Add option to export comparison as CSV
+
+The comparison should clearly show which inputs differ between scenarios and how those differences affect the final bonus calculation.
+
+# Test Strategy:
+1. Unit tests for comparison functions
+2. Test comparing scenarios with various differences
+3. Test the highlighting of differences
+4. Test the export functionality
+5. Test with edge cases (very similar scenarios, very different scenarios)
+6. Verify that the comparison is clear and understandable

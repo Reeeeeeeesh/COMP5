@@ -1,0 +1,31 @@
+# API Framework
+fastapi==0.103.1
+uvicorn[standard]==0.23.2
+pydantic==2.3.0
+python-dotenv==1.0.0
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+apscheduler==3.10.4
+
+# Testing
+pytest==7.4.2
+httpx==0.24.1
+pytest-cov==4.1.0
+
+# Utilities
+python-multipart==0.0.6
+email-validator==2.0.0
+
+# CORS
+starlette==0.27.0
+
+# Linting and Formatting
+black==23.9.1
+flake8==6.1.0
+isort==5.12.0
+mypy==1.5.1
+flake8-docstrings==1.7.0
+flake8-bugbear==23.9.16
+pre-commit==3.4.0

@@ -1,0 +1,32 @@
+# Task ID: 10
+# Title: Implement Sensitivity Analysis for Individual Calculations
+# Status: pending
+# Dependencies: 3, 4, 5, 6, 7
+# Priority: medium
+# Description: Develop sensitivity analysis functionality with sliders for key inputs as specified in FR5.3.
+# Details:
+1. Design and implement UI for sensitivity analysis:
+   - Sliders for key inputs (Investment Score, Qualitative Score, RAF, etc.)
+   - Real-time display of how changing each input affects the final bonus
+   - Visual representation of sensitivity (e.g., small chart showing impact)
+
+2. Implement sensitivity calculation functions:
+   - Calculate bonus for a range of values for each key input
+   - Determine which inputs have the greatest impact on the final bonus
+   - Calculate percentage change in bonus for a given percentage change in input
+
+3. Create visual representations of sensitivity:
+   - Mini-charts showing bonus amount vs. input value
+   - Color coding to indicate high/medium/low sensitivity
+
+4. Ensure real-time updates as sliders are moved
+
+The sensitivity analysis should help users understand which inputs have the greatest impact on the final bonus calculation and how changes to those inputs affect the result.
+
+# Test Strategy:
+1. Unit tests for sensitivity calculation functions
+2. Test with various input ranges to verify correct sensitivity calculations
+3. Test the real-time updates as sliders are moved
+4. Test with edge cases (inputs near caps or clamps)
+5. Verify that the visual representations accurately reflect the sensitivity
+6. Performance testing to ensure smooth slider operation

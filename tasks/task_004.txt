@@ -1,0 +1,36 @@
+# Task ID: 4
+# Title: Implement Investment Performance Component
+# Status: pending
+# Dependencies: 2, 3
+# Priority: medium
+# Description: Develop the investment performance component of the calculator with adjustable parameters as specified in FR3.2.
+# Details:
+1. Create UI components for investment performance inputs:
+   - Input fields for individual fund alphas (in basis points)
+   - Input fields for AUM weight per fund
+   - Adjustable parameters for the alpha-to-multiplier mapping curve
+   - Input for the overall Investment Weight
+
+2. Implement calculation functions:
+   - Calculate weighted alpha based on individual fund alphas and AUM weights
+   - Implement the alpha-to-multiplier mapping function with configurable parameters
+   - Calculate the investment component contribution to the bonus
+
+3. Provide option to input the Investment Score Multiplier directly as an alternative
+
+4. Implement real-time updates of the investment component as inputs change
+
+5. Add validation for all inputs with appropriate constraints
+
+The alpha-to-multiplier mapping should support configuration of:
+- Alpha value for 1x payout
+- Alpha value for max payout
+- Maximum payout multiplier
+
+# Test Strategy:
+1. Unit tests for all calculation functions
+2. Test with various alpha values and weights to verify correct multiplier calculation
+3. Test the direct input option for Investment Score Multiplier
+4. Test edge cases (very high/low alpha values)
+5. Verify real-time updates work correctly
+6. Test with the truth table cases from section 11 of the PRD
