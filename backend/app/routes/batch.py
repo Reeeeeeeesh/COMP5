@@ -28,7 +28,7 @@ from app.db.schemas import (
     BatchScenarioWithResults, BatchUploadWithEmployees,
     BatchCalculationResultWithEmployees, SessionWithData,
     ImportTemplate, ImportTemplateCreate, ImportTemplateUpdate,
-    ColumnInfoSchema
+    ColumnInfoSchema, ColumnMappingPayload
 )
 
 logger = logging.getLogger(__name__)
@@ -178,24 +178,38 @@ def delete_scenario(
 
 # Batch upload management
 
-@router.post("/uploads/file", response_model=Dict[str, Any])
+@router.post("/file", response_model=Dict[str, Any])
 async def upload_file(
     file: UploadFile = File(...),
     template_id: Optional[int] = Form(None),
     session_id: Optional[str] = Cookie(None),
+    skip_mapping: Optional[bool] = Form(False),
     db: Session = Depends(get_db)
 ):
-    """Upload a file for batch processing."""
+    """Upload a file for batch processing.
+    
+    With skip_mapping=True, the file is assumed to follow the template format exactly,
+    and column mapping step is skipped.
+    """
+    # Create or verify session
     if not session_id:
-        raise HTTPException(status_code=404, detail="No active session")
-    
-    # Verify session exists
-    db_session = SessionDAL.get_session(db, session_id)
-    if not db_session:
-        raise HTTPException(status_code=404, detail="Session not found")
-    
-    if db_session.expires_at < datetime.datetime.utcnow():
-        raise HTTPException(status_code=401, detail="Session expired")
+        # Create a new session if one doesn't exist
+        logger.info("No session ID found, creating a new session")
+        db_session = SessionDAL.create_session(db, expires_in_hours=24)
+        # Note: We can't set the cookie here since we're not returning a Response object
+        # The frontend will need to handle this session ID manually
+        session_id = db_session.id
+    else:
+        # Verify session exists
+        db_session = SessionDAL.get_session(db, session_id)
+        if not db_session:
+            logger.warning(f"Session not found: {session_id}, creating a new one")
+            db_session = SessionDAL.create_session(db, expires_in_hours=24)
+            session_id = db_session.id
+        elif db_session.expires_at < datetime.datetime.utcnow():
+            logger.warning(f"Session expired: {session_id}, creating a new one")
+            db_session = SessionDAL.create_session(db, expires_in_hours=24)
+            session_id = db_session.id
     
     # Read the file content first to store it raw
     raw_content = await file.read()
@@ -211,27 +225,61 @@ async def upload_file(
         # More specific error for file processing issues vs. data validation issues
         raise HTTPException(status_code=400, detail=validation_results['error'])
     
-    # Create the BatchUpload record, now storing the raw content and column info
-    # The status will default to 'awaiting_mapping' or can be set explicitly
+    # Determine the status based on whether we're skipping mapping
+    status = "ready_for_processing" if skip_mapping else "awaiting_mapping"
+    
+    # Create the batch upload record
     batch_upload = BatchUploadDAL.create_upload(
         db,
         session_id=session_id,
         filename=file.filename,
-        expires_in_hours=24, 
-        source_columns_info=source_columns_info, 
+        expires_in_hours=24,  # Default value, can be made configurable
+        source_columns_info=source_columns_info,
         raw_file_content=raw_content,
-        status="awaiting_mapping" # Explicitly set status
+        status=status
     )
     
-    # --- IMPORTANT: EmployeeData is NO LONGER saved here ---
-    # The data will be processed and saved after column mapping in a new endpoint.
-
+    # If skipping mapping, automatically process the data using standard column names
+    if skip_mapping and validation_results.get('valid', False):
+        # Create a standard column mapping (assuming file follows template exactly)
+        column_mapping = {col: col for col in FileProcessor.REQUIRED_COLUMNS}
+        
+        # Process and save the data directly
+        try:
+            # Save the employee data from the DataFrame
+            employees_saved = EmployeeDataDAL.save_employees_from_dataframe(
+                db, 
+                df, 
+                batch_upload.id,
+                column_mapping
+            )
+            
+            # Update the batch upload status
+            BatchUploadDAL.update_upload_status(db, batch_upload.id, "processed")
+            
+            return {
+                "message": "File uploaded and processed successfully using template format.",
+                "upload_id": batch_upload.id,
+                "filename": batch_upload.filename,
+                "status": "processed",
+                "session_id": session_id,
+                "rows_processed": len(df),
+                "rows_saved": employees_saved,
+                "validation_results": validation_results
+            }
+        except Exception as e:
+            logger.error(f"Error processing template-based upload: {str(e)}")
+            # Update status to error
+            BatchUploadDAL.update_upload_status(db, batch_upload.id, "error")
+            raise HTTPException(status_code=500, detail=f"Error processing upload: {str(e)}")
+    
     # Return information about the created batch upload, including its ID for next steps
     return {
         "message": "File uploaded successfully and is awaiting column mapping.",
         "upload_id": batch_upload.id,
         "filename": batch_upload.filename,
         "status": batch_upload.status,
+        "session_id": session_id,  # Include session ID in response
         "source_columns_info": source_columns_info, # Return this so UI can proceed to mapping
         "validation_results": validation_results # Return initial validation (e.g., template applied)
     }
@@ -240,9 +288,9 @@ async def upload_file(
 @router.post("/uploads/{upload_id}/map_and_process", status_code=200)
 async def map_and_process_upload(
     upload_id: int,
-    payload: schemas.ColumnMappingPayload,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_active_user) # Assuming authentication is needed
+    payload: ColumnMappingPayload,
+    db: Session = Depends(get_db)
+    # Authentication removed as User model is not implemented
 ):
     """
     Processes an uploaded file after column mapping. 
@@ -408,12 +456,28 @@ def create_upload(
     if not db_session:
         raise HTTPException(status_code=404, detail="Session not found")
     
-    return BatchUploadDAL.create_upload(
-        db,
-        session_id=upload.session_id,
-        filename=upload.filename,
-        expires_in_hours=upload.expires_in_hours
-    )
+    try:
+        return BatchUploadDAL.create_upload(
+            db,
+            session_id=upload.session_id,
+            filename=upload.filename,
+            expires_in_hours=upload.expires_in_hours
+        )
+    except SQLAlchemyError as e:
+        logger.error(f"Database error creating batch upload: {str(e)}")
+        logger.error(f"Original error: {e.__cause__}")
+        logger.error(f"SQL error details: {getattr(e, 'orig', 'No original error')}")
+        
+        # Provide more specific error message based on the exception
+        error_detail = "Database error creating batch upload"
+        if hasattr(e, 'orig') and e.orig is not None:
+            error_detail = f"{error_detail}: {str(e.orig)}"
+        
+        raise HTTPException(status_code=500, detail=error_detail)
+    except Exception as e:
+        logger.error(f"Unexpected error creating batch upload: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
 
 
 @router.get("/uploads/{upload_id}", response_model=BatchUpload)

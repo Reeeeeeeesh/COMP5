@@ -4,14 +4,15 @@ CRUD operations for database models.
 import uuid
 import datetime
 import json
+import pandas as pd
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from . import models, schemas
-from .models import Session as SessionModel, User, BatchUpload, EmployeeData, ImportTemplate, BatchScenario 
+from .models import Session as SessionModel, BatchUpload, EmployeeData, ImportTemplate, BatchScenario 
 from .schemas import (
-    SessionCreate, UserCreate, BatchUploadCreate, EmployeeDataCreate, 
+    SessionCreate, BatchUploadCreate, EmployeeDataCreate, 
     ImportTemplateCreate, ImportTemplateUpdate, BatchScenarioCreate, BatchScenarioUpdate,
     ColumnInfoSchema 
 )
@@ -151,20 +152,47 @@ class BatchUploadDAL:
         status: str = "awaiting_mapping"
     ) -> models.BatchUpload:
         """Create a new batch upload record, storing raw file content and column info."""
-        expires_at = datetime.datetime.utcnow() + datetime.timedelta(hours=expires_in_hours)
-        db_upload = models.BatchUpload(
-            session_id=session_id, 
-            filename=filename, 
-            expires_at=expires_at,
-            uploaded_at=datetime.datetime.utcnow(),
-            status=status,
-            source_columns_info=json.dumps(source_columns_info) if source_columns_info else None,
-            raw_file_content=raw_file_content
-        )
-        db.add(db_upload)
-        db.commit()
-        db.refresh(db_upload)
-        return db_upload
+        try:
+            # Add logging for debugging
+            print(f"Creating batch upload with session_id={session_id}, filename={filename}, expires_in_hours={expires_in_hours}")
+            
+            # Convert expires_in_hours to an actual datetime for the database
+            expires_at = datetime.datetime.utcnow() + datetime.timedelta(hours=expires_in_hours)
+            now = datetime.datetime.utcnow()
+            
+            # Create the BatchUpload object with all required fields
+            db_upload = models.BatchUpload(
+                session_id=session_id, 
+                filename=filename, 
+                expires_at=expires_at,
+                uploaded_at=now,
+                status=status,
+                source_columns_info=json.dumps(source_columns_info) if source_columns_info else None,
+                raw_file_content=raw_file_content
+                # Let SQLAlchemy handle created_at and updated_at via server defaults
+            )
+            
+            # Add to session and commit
+            db.add(db_upload)
+            db.commit()
+            db.refresh(db_upload)
+            
+            print(f"Successfully created batch upload with ID: {db_upload.id}")
+            return db_upload
+        except SQLAlchemyError as e:
+            db.rollback()  # Roll back the transaction on error
+            print(f"SQLAlchemy error creating batch upload: {str(e)}")
+            print(f"Original error: {e.__cause__}")
+            print(f"SQL error details: {getattr(e, 'orig', 'No original error')}")
+            import traceback
+            traceback.print_exc()  # Print full traceback for better debugging
+            raise  # Re-raise the exception for proper error handling
+        except Exception as e:
+            db.rollback()  # Roll back the transaction on error
+            print(f"Error creating batch upload: {str(e)}")
+            import traceback
+            traceback.print_exc()  # Print full traceback for better debugging
+            raise  # Re-raise the exception for proper error handling
     
     @staticmethod
     def get_upload(db: Session, upload_id: int) -> Optional[models.BatchUpload]:
@@ -201,6 +229,23 @@ class BatchUploadDAL:
         db.commit()
         return result
 
+    @staticmethod
+    def update_upload_status(db: Session, upload_id: int, status: str) -> Optional[models.BatchUpload]:
+        """Updates the status of a batch upload."""
+        upload = db.query(models.BatchUpload).filter(models.BatchUpload.id == upload_id).first()
+        if upload:
+            upload.status = status
+            db.commit()
+            db.refresh(upload)
+            # Re-deserialize source_columns_info if it was serialized before update
+            if upload.source_columns_info and isinstance(upload.source_columns_info, str):
+                try:
+                    upload.source_columns_info = json.loads(upload.source_columns_info)
+                except json.JSONDecodeError:
+                    upload.source_columns_info = []
+            return upload
+        return None
+        
     @staticmethod
     def update_upload_processing_status(
         db: Session, 
@@ -291,6 +336,65 @@ class EmployeeDataDAL:
             models.EmployeeData.batch_upload_id == batch_upload_id,
             models.EmployeeData.team == team
         ).all()
+    
+    @staticmethod
+    def save_employees_from_dataframe(
+        db: Session,
+        df: pd.DataFrame,
+        batch_upload_id: int,
+        column_mapping: Dict[str, str]
+    ) -> int:
+        """Save employee data from a DataFrame.
+        
+        Args:
+            db: Database session
+            df: DataFrame containing employee data
+            batch_upload_id: ID of the batch upload
+            column_mapping: Mapping of DataFrame columns to database fields
+            
+        Returns:
+            Number of employees saved
+        """
+        employees_saved = 0
+        
+        try:
+            # Process each row in the DataFrame
+            for _, row in df.iterrows():
+                # Extract values using the column mapping
+                employee_data = {}
+                
+                # Map required fields
+                for field, col in column_mapping.items():
+                    if col in df.columns:
+                        employee_data[field] = row[col]
+                
+                # Create the employee record
+                EmployeeDataDAL.create_employee(
+                    db=db,
+                    batch_upload_id=batch_upload_id,
+                    employee_id=employee_data.get('employee_id'),
+                    name=employee_data.get('name'),
+                    team=employee_data.get('team'),
+                    base_salary=float(employee_data.get('base_salary', 0)),
+                    target_bonus_pct=float(employee_data.get('target_bonus_pct', 0)),
+                    investment_weight=float(employee_data.get('investment_weight', 0)),
+                    qualitative_weight=float(employee_data.get('qualitative_weight', 0)),
+                    investment_score_multiplier=float(employee_data.get('investment_score_multiplier', 1)),
+                    qual_score_multiplier=float(employee_data.get('qual_score_multiplier', 1)),
+                    raf=float(employee_data.get('raf', 1)),
+                    is_mrt=bool(employee_data.get('is_mrt', False)),
+                    mrt_cap_pct=float(employee_data.get('mrt_cap_pct', 0)) if employee_data.get('mrt_cap_pct') else None
+                )
+                
+                employees_saved += 1
+                
+            return employees_saved
+        except Exception as e:
+            db.rollback()
+            print(f"Error saving employees from DataFrame: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
     
     @staticmethod
     def update_employee(
