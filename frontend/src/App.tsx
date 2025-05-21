@@ -1,14 +1,14 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import CalculatorContainer from './components/calculator/CalculatorContainer'
-import BatchUploadContainer from './components/batch/BatchUploadContainer'
-import SimpleBatchUpload from './components/batch/SimpleBatchUpload'
-import BatchResultsContainer from './components/batch/BatchResultsContainer'
+import BatchPage from './pages/BatchPage'
+import SimpleScenarioPlayground from './components/scenario/SimpleScenarioPlayground';
 import DocsContainer from './components/ui/docs/DocsContainer'
 import AppProvider from './contexts/AppProvider'
 import { Navbar, NavbarItem } from './components/ui/navigation'
 import { useTheme } from './contexts/ThemeContext'
 import { Button } from './components/ui/buttons'
+// ScenarioProvider removed as we're using the simplified playground
 
 // Theme toggle component
 const ThemeToggle = () => {
@@ -53,6 +53,9 @@ function App() {
             <NavbarItem href="/batch" active={window.location.pathname === '/batch'}>
               Batch Processing
             </NavbarItem>
+            <NavbarItem href="/scenarios" active={window.location.pathname === '/scenarios'}>
+              Scenario Playground
+            </NavbarItem>
             <NavbarItem href="/docs" active={window.location.pathname === '/docs'}>
               Component Docs
             </NavbarItem>
@@ -61,8 +64,8 @@ function App() {
           <main className="py-10 pt-20"> {/* Added pt-20 to account for fixed navbar */}
             <Routes>
               <Route path="/" element={<CalculatorContainer />} />
-              <Route path="/batch" element={<SimpleBatchUpload />} />
-              <Route path="/batch/results/:batchResultId" element={<BatchResultsContainer />} />
+              <Route path="/batch/*" element={<BatchPage />} />
+              <Route path="/scenarios" element={<SimpleScenarioPlayground />} />
               <Route path="/docs" element={<DocsContainer />} />
             </Routes>
           </main>
