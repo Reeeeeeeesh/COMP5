@@ -41,12 +41,20 @@ class BatchScenario(BaseModel):
     session_id = Column(String(36), ForeignKey("sessions.id"), nullable=False)
     is_saved = Column(Boolean, default=False, nullable=False)
     
+    # Version tracking - self-reference for scenario history
+    parent_scenario_id = Column(Integer, ForeignKey("batch_scenarios.id"), nullable=True, index=True)
+    
     # Parameter sets stored as JSON
     global_parameters = Column(JSON, nullable=False)
+    
+    # Additional parameters for scenario playground (overrides)
+    parameters = Column(JSON, nullable=True)
     
     # Relationships
     session = relationship("Session", back_populates="scenarios")
     calculation_results = relationship("BatchCalculationResult", back_populates="scenario", cascade="all, delete-orphan")
+    parent_scenario = relationship("BatchScenario", remote_side=[id], backref="child_scenarios")
+    audit_logs = relationship("ScenarioAuditLog", back_populates="scenario", cascade="all, delete-orphan")
 
 
 class BatchUpload(BaseModel):
@@ -58,6 +66,7 @@ class BatchUpload(BaseModel):
     filename = Column(String(255), nullable=False)
     status = Column(String(50), default="pending_upload", nullable=False) 
     uploaded_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    # This is populated from expires_in_hours in the schema
     expires_at = Column(DateTime, nullable=True) 
     processed_at = Column(DateTime, nullable=True)
     error_message = Column(Text, nullable=True)
@@ -129,6 +138,9 @@ class EmployeeCalculationResult(BaseModel):
     batch_result_id = Column(Integer, ForeignKey("batch_calculation_results.id"), nullable=False)
     employee_data_id = Column(Integer, ForeignKey("employee_data.id"), nullable=False)
     
+    # Direct link to scenario for the Scenario Playground feature
+    scenario_id = Column(Integer, ForeignKey("batch_scenarios.id"), nullable=True, index=True)
+    
     # Calculation results
     investment_component = Column(Float, nullable=False)
     qualitative_component = Column(Float, nullable=False)
@@ -142,6 +154,21 @@ class EmployeeCalculationResult(BaseModel):
     # Relationships
     batch_result = relationship("BatchCalculationResult", back_populates="employee_results")
     employee_data = relationship("EmployeeData", back_populates="calculation_results")
+    scenario = relationship("BatchScenario", foreign_keys=[scenario_id])
+
+
+class ScenarioAuditLog(BaseModel):
+    """Model for tracking changes to scenarios for audit purposes."""
+    __tablename__ = "scenario_audit_log"
+    
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    scenario_id = Column(Integer, ForeignKey("batch_scenarios.id"), nullable=False, index=True)
+    user_id = Column(String(36), nullable=True)  # Nullable for system-generated changes
+    action = Column(String(50), nullable=False)  # e.g., 'create', 'update', 'delete'
+    diff = Column(JSON, nullable=True)  # JSON representation of changes
+    
+    # Relationships
+    scenario = relationship("BatchScenario", back_populates="audit_logs")
 
 
 class ImportTemplate(BaseModel):
