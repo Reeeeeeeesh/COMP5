@@ -30,6 +30,10 @@ from app.db.schemas import (
     ImportTemplate, ImportTemplateCreate, ImportTemplateUpdate,
     ColumnInfoSchema, ColumnMappingPayload
 )
+from app.services.calculation_engine import calculate_bonus # Added
+from app.db import schemas as app_schemas # To distinguish from local 'schemas' variable if any
+from sqlalchemy.exc import SQLAlchemyError # Added for more specific error handling
+
 
 logger = logging.getLogger(__name__)
 
@@ -1003,3 +1007,137 @@ def optimize_budget(
         "achieved_avg_bonus_ratio": round(achieved_ratio, 4),
         "iterations": min(max_iterations, len(df) * 16 * 21)  # Estimate of iterations
     }
+
+
+@router.post("/uploads/{upload_id}/calculate_and_retrieve_results", response_model=app_schemas.BatchCalculationResultWithEmployees)
+async def calculate_and_retrieve_results(
+    upload_id: int,
+    db: Session = Depends(get_db),
+    session_id: Optional[str] = Cookie(None)
+):
+    """
+    Calculates bonuses for all employees in a given batch upload,
+    stores the results, and returns them.
+    """
+    # 1. Verify BatchUpload exists and has a suitable status
+    batch_upload = BatchUploadDAL.get_upload(db, upload_id)
+    if not batch_upload:
+        raise HTTPException(status_code=404, detail=f"Batch upload with ID {upload_id} not found.")
+
+    if batch_upload.status not in ["completed", "processed"]:
+        logger.error(f"Attempt to calculate for upload {upload_id} with invalid status: {batch_upload.status}")
+        raise HTTPException(
+            status_code=400, # Bad Request
+            detail=f"Batch upload ID {upload_id} is not ready for calculation. Current status: {batch_upload.status}. Expected 'completed' or 'processed'."
+        )
+
+    # 2. Retrieve EmployeeData
+    retrieved_employee_data = EmployeeDataDAL.get_employees_by_upload(db, upload_id)
+    if not retrieved_employee_data:
+        raise HTTPException(status_code=404, detail=f"No employee data found for batch upload ID {upload_id}. Cannot perform calculations.")
+
+    # 3. Determine session ID
+    effective_session_id = session_id or batch_upload.session_id
+    if not effective_session_id:
+        logger.error(f"Critical: No session_id available for upload {upload_id} and no active session cookie for scenario creation.")
+        raise HTTPException(status_code=500, detail="Cannot determine session for creating calculation scenario. Please ensure you have an active session.")
+
+    # --- Start of main transaction block ---
+    try:
+        # Create a new BatchScenario
+        scenario_name = f"Auto-calc for Upload {upload_id} - {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        new_scenario = BatchScenarioDAL.create_scenario(
+            db,
+            session_id=effective_session_id,
+            name=scenario_name,
+            description="Automatically generated scenario for immediate batch calculation from upload.",
+            global_parameters={}, 
+            is_saved=False 
+        )
+
+        # Create the initial BatchCalculationResult record
+        batch_calc_result_db = BatchCalculationResultDAL.create_result(
+            db=db, # Pass db session
+            scenario_id=new_scenario.id,
+            total_bonus_pool=0, 
+            average_bonus=0,    
+            total_employees=len(retrieved_employee_data),
+            capped_employees=0  
+        )
+
+        total_bonus_pool = 0.0
+        capped_employees_count = 0
+        created_employee_calc_results_db = []
+
+        for emp_data in retrieved_employee_data:
+            mrt_cap_pct_val = emp_data.mrt_cap_pct if emp_data.mrt_cap_pct is not None else 200.0
+            
+            # The calculate_bonus function itself is pure Python, no DB ops
+            individual_calc_output = calculate_bonus(
+                base_salary=emp_data.base_salary,
+                target_bonus_pct=emp_data.target_bonus_pct,
+                investment_weight=emp_data.investment_weight,
+                qualitative_weight=emp_data.qualitative_weight,
+                investment_score_multiplier=emp_data.investment_score_multiplier,
+                qual_score_multiplier=emp_data.qual_score_multiplier,
+                raf=emp_data.raf,
+                is_mrt=emp_data.is_mrt,
+                mrt_cap_pct=mrt_cap_pct_val
+            )
+            
+            emp_result_create_schema = app_schemas.EmployeeCalculationResultCreate(
+                batch_result_id=batch_calc_result_db.id,
+                employee_data_id=emp_data.id,
+                investment_component=individual_calc_output["investment_component"],
+                qualitative_component=individual_calc_output["qualitative_component"],
+                weighted_performance=individual_calc_output["weighted_performance"],
+                pre_raf_bonus=individual_calc_output["pre_raf_bonus"],
+                final_bonus=individual_calc_output["capped_bonus"],
+                bonus_to_salary_ratio=individual_calc_output["bonus_to_salary_ratio"],
+                policy_breach=individual_calc_output["policy_breach"],
+                applied_cap=individual_calc_output["applied_cap"]
+            )
+            # Create individual employee calculation result (DB operation)
+            created_emp_res = EmployeeCalculationResultDAL.create_result(db, **emp_result_create_schema.dict())
+            created_employee_calc_results_db.append(created_emp_res)
+            
+            total_bonus_pool += individual_calc_output["capped_bonus"]
+            if individual_calc_output["applied_cap"] is not None:
+                capped_employees_count += 1
+
+        # Update the BatchCalculationResult with aggregated totals
+        batch_calc_result_db.total_bonus_pool = total_bonus_pool
+        batch_calc_result_db.average_bonus = total_bonus_pool / len(retrieved_employee_data) if retrieved_employee_data else 0
+        batch_calc_result_db.capped_employees = capped_employees_count
+        
+        # All individual employee results and the parent batch_calc_result are created/updated.
+        # Now commit the entire transaction.
+        db.commit()
+
+        # Refresh objects to get DB-generated values and relationships loaded for response
+        db.refresh(new_scenario)
+        db.refresh(batch_calc_result_db)
+        for res in created_employee_calc_results_db:
+            db.refresh(res)
+        
+        # Assign the loaded employee results to the batch result for the response model
+        batch_calc_result_db.employee_results = created_employee_calc_results_db
+        
+        return batch_calc_result_db
+
+    except SQLAlchemyError as e:
+        db.rollback() # Rollback the entire transaction
+        logger.error(f"Database error during calculation for upload {upload_id}: {e}", exc_info=True)
+        # Attempt to find if scenario or batch_calc_result_db were created to include their IDs in error
+        scenario_id_for_error = "unknown"
+        if 'new_scenario' in locals() and new_scenario and hasattr(new_scenario, 'id'):
+            scenario_id_for_error = new_scenario.id
+        elif 'batch_calc_result_db' in locals() and batch_calc_result_db and hasattr(batch_calc_result_db, 'scenario_id'):
+             scenario_id_for_error = batch_calc_result_db.scenario_id
+
+        raise HTTPException(status_code=500, detail=f"A database error occurred while processing calculations for scenario {scenario_id_for_error}. Please try again later.")
+    
+    except Exception as e: # Catch any other unexpected errors
+        db.rollback() # Rollback on non-SQLAlchemy errors too, if DB ops happened before error
+        logger.error(f"Unexpected error during calculation for upload {upload_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="An unexpected error occurred during the calculation process. Please contact support.")
