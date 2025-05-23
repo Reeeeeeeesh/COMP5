@@ -89,13 +89,13 @@ const SimpleScenarioPlayground: React.FC = () => {
           if (batchResults && batchResults.employee_results) {
             // Transform batch data to the format expected by the scenario playground
             const transformedEmployees = batchResults.employee_results.map((emp: any) => ({
-              id: emp.employee_id,
+              id: emp.id, // Use emp.id (string employee_id from PlaygroundEmployeeData)
               name: emp.name,
               team: emp.team,
-              salary: emp.base_salary,
-              bonus: emp.calculated_bonus,
-              ratio: (emp.calculated_bonus / emp.base_salary) * 100,
-              performance: emp.bonus_percent >= 100 ? 'Exceeds' : 'Meets'
+              salary: emp.salary, // Use emp.salary
+              bonus: emp.bonus, // Use emp.bonus
+              ratio: emp.ratio, // Use emp.ratio (already calculated percentage)
+              performance: emp.performance // Use pre-calculated emp.performance string
             }));
             
             setEmployees(transformedEmployees);
@@ -104,14 +104,18 @@ const SimpleScenarioPlayground: React.FC = () => {
             
             // Set parameters from batch processing
             if (batchResults.parameters) {
-              setBonusPool(batchResults.parameters.bonusPool || 1000000);
-              setCapPercent(batchResults.parameters.capPercent || 200);
+              setBonusPool(batchResults.parameters.bonusPool ?? 1000000); // Use ?? for nullish coalescing
+              setCapPercent(batchResults.parameters.capPercent ?? 200);
+            } else {
+              // Fallback if parameters object itself is missing
+              setBonusPool(1000000);
+              setCapPercent(200);
             }
             
             return true;
           }
         } catch (error) {
-          console.error('Error parsing batch results:', error);
+          console.error('Error parsing "batchResults" from sessionStorage:', error);
         }
       }
       
